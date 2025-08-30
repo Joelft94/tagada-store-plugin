@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer components {
+  /* Button Variants */
+  .btn-primary {
+    @apply bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-8 py-3 rounded-full font-medium text-sm tracking-wide hover:from-teal-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-teal-600 px-8 py-3 rounded-full font-medium text-sm tracking-wide border-2 border-teal-200 hover:bg-teal-50 hover:border-teal-300 transition-all duration-300 shadow-md hover:shadow-lg;
+  }
+
+  /* Card Variants */
+  .feature-card {
+    @apply bg-white rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-pulse;
+  }
+  
+  .cart-item-card {
+    @apply bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border border-teal-100;
+  }
+  
+  .benefit-card {
+    @apply text-center space-y-3 p-4 rounded-xl hover:bg-teal-50 transition-colors duration-300;
+  }
+  
+  .ingredient-card {
+    @apply bg-white rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1;
+  }
+  
+  .category-card {
+    @apply text-center space-y-4 p-4 rounded-xl hover:bg-white/80 transition-colors duration-300 cursor-pointer;
+  }
+  
+  .collection-card {
+    @apply relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105;
+  }
+
+  /* Icons */
+  .icon-container {
+    @apply w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:bg-teal-200 transition-colors duration-300;
+  }
+  
+  .icon-container-lg {
+    @apply w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-6 mx-auto group-hover:bg-teal-200 transition-colors duration-300;
+  }
+  
+  .floating-element {
+    @apply absolute w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Typography */
+  .section-title {
+    @apply text-3xl md:text-4xl font-light text-gray-800 mb-6 leading-tight;
+  }
+  
+  .section-subtitle {
+    @apply text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed;
+  }
+  
+  .feature-text {
+    @apply text-xs font-medium text-gray-800 leading-tight whitespace-pre-line;
+  }
+  
+  .ingredient-title {
+    @apply text-lg font-medium text-gray-800 mb-3 group-hover:text-teal-600 transition-colors duration-300;
+  }
+  
+  .category-title {
+    @apply text-sm font-medium text-gray-800 group-hover:text-teal-600 transition-colors duration-300;
+  }
+  
+  .category-icon {
+    @apply w-12 h-12 rounded-full mb-3 mx-auto transition-colors duration-300;
+  }
+  
+  .collection-title {
+    @apply text-xl font-light text-white mb-2;
+  }
+  
+  .collection-subtitle {
+    @apply text-sm text-white/90;
+  }
+  
+  .collection-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-between p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+  }
+  
+  .collection-content {
+    @apply mt-auto;
+  }
+  
+  .collection-arrow {
+    @apply self-end;
+  }
+
+  /* Form Elements */
+  .newsletter-input {
+    @apply flex-1 px-4 py-3 rounded-full border-0 bg-white/20 backdrop-blur-sm text-white placeholder-white/70 focus:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50;
+  }
+  
+  .newsletter-button {
+    @apply px-8 py-3 bg-white text-teal-600 rounded-full font-medium hover:bg-white/90 transition-colors duration-200;
+  }
+
+  /* Links */
+  .footer-link {
+    @apply text-gray-400 hover:text-white transition-colors duration-200 text-sm;
+  }
+  
+  .social-icon {
+    @apply w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors duration-200 cursor-pointer;
+  }
+
+  /* Shadows */
+  .shadow-primary-lg {
+    @apply shadow-xl shadow-teal-500/10;
+  }
+}
+
+@layer utilities {
+  .animate-draw {
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    animation: draw 2s ease-in-out forwards;
+  }
+  
+  .animation-delay-500 {
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
