@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams, Navigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Star, Heart, Share2, Plus, Minus, ShoppingBag, Gift } from 'lucide-react'
 import { useCartContext } from '../contexts/CartProvider'
-import { useProducts } from '../hooks/useProducts'
+import { useProducts, type ProductVariant } from '../hooks/useProducts'
 import { toast } from 'sonner'
 
 export function ProductDetail() {
@@ -15,7 +15,7 @@ export function ProductDetail() {
   
   // Debug logging removed
 
-  const [selectedVariant, setSelectedVariant] = useState(null)
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
@@ -247,9 +247,9 @@ export function ProductDetail() {
                 </div>
               </div>
 
-              <button onClick={handleAddToCart} className="w-full btn-primary text-lg py-4">
+              <button onClick={handleAddToCart} className="w-full bg-teal-500 hover:bg-teal-600 text-white px-6 py-4 rounded-full transition-colors duration-200 font-medium text-lg flex items-center justify-center">
                 <ShoppingBag className="w-5 h-5 mr-2" />
-                Add to Cart - ${((selectedVariant?.price || 0) * quantity).toFixed(2)}
+                Add to Cart - ${((selectedVariant?.prices[0]?.amount || 0) / 100 * quantity).toFixed(2)}
               </button>
             </div>
 

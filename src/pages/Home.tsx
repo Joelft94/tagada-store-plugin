@@ -11,7 +11,6 @@ import {
   Star,
 } from "lucide-react";
 import { useCartContext } from "../contexts/CartProvider";
-import { useConfigProducts } from "../hooks/useConfigProducts";
 
 export function Home() {
   const [scrollY, setScrollY] = useState(0);

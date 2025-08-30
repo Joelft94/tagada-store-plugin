@@ -3,7 +3,6 @@ import { ArrowLeft, Star, ShoppingBag } from 'lucide-react'
 import { useCartContext } from '../contexts/CartProvider'
 import { useConfigProducts } from '../hooks/useConfigProducts'
 import { toast } from 'sonner'
-import type { Product } from '../hooks/useProducts'
 
 // Interface for simplified product display
 interface DisplayProduct {
