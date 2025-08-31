@@ -41,7 +41,7 @@ export function Home() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 via-secondary-50 to-primary-50 min-h-screen flex items-center pt-20 overflow-hidden">
+      <section className="relative hero-background min-h-screen flex items-center pt-20 overflow-hidden">
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -50,7 +50,7 @@ export function Home() {
         >
           <div className="absolute top-20 left-10 w-32 h-32 bg-primary/40 rounded-full blur-xl animate-pulse"></div>
           <div className="absolute bottom-20 right-10 w-48 h-48 bg-secondary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-emerald-200/30 rounded-full blur-lg animate-pulse delay-500"></div>
+          <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-primary/30 rounded-full blur-lg animate-pulse delay-500"></div>
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
