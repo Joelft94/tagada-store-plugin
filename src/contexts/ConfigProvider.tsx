@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { useConfig } from '../hooks/useConfig'
 import type { Config } from '../types/config'
+import { getLocalizedContent, getSectionContent } from '../types/config'
 
 interface ConfigContextValue {
   config: Config | null
@@ -11,6 +12,9 @@ interface ConfigContextValue {
   loadConfig: (configName: string) => Promise<void>
   reloadConfig: () => Promise<void>
   resetToDefault: () => void
+  // Helper functions for localized content
+  getTagline: (locale?: string) => string
+  getSectionText: (sectionKey: string, locale?: string) => string
 }
 
 const ConfigContext = createContext<ConfigContextValue | null>(null)
@@ -18,77 +22,112 @@ const ConfigContext = createContext<ConfigContextValue | null>(null)
 interface ConfigProviderProps {
   children: ReactNode
   defaultConfig?: string
+  locale?: string
 }
 
-export function ConfigProvider({ children, defaultConfig = 'skincare-demo' }: ConfigProviderProps) {
+export function ConfigProvider({ 
+  children, 
+  defaultConfig = 'skincare-demo',
+  locale = 'en' 
+}: ConfigProviderProps) {
   const configState = useConfig(defaultConfig)
   
-  // Apply brand colors to CSS custom properties when config loads
+  // Apply branding colors to CSS custom properties when config loads
   useEffect(() => {
-    if (configState.config?.brand?.colors) {
-      const { colors } = configState.config.brand
+    if (configState.config?.branding) {
+      const { branding } = configState.config
       const root = document.documentElement
       
-      // Apply colors as CSS custom properties
-      root.style.setProperty('--color-primary', colors.primary)
-      root.style.setProperty('--color-secondary', colors.secondary)
-      if (colors.accent) root.style.setProperty('--color-accent', colors.accent)
-      if (colors.background) root.style.setProperty('--color-background', colors.background)
-      if (colors.text) root.style.setProperty('--color-text', colors.text)
+      // Helper function to lighten/darken hex colors
+      const adjustBrightness = (hex: string, percent: number): string => {
+        const num = parseInt(hex.replace('#', ''), 16)
+        const amt = Math.round(2.55 * percent)
+        const R = (num >> 16) + amt
+        const G = (num >> 8 & 0x00FF) + amt
+        const B = (num & 0x0000FF) + amt
+        return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+          (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+          (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)
+      }
+      
+      // Apply primary color and variants
+      root.style.setProperty('--color-primary', branding.primaryColor)
+      root.style.setProperty('--color-primary-light', adjustBrightness(branding.primaryColor, 20))
+      root.style.setProperty('--color-primary-dark', adjustBrightness(branding.primaryColor, -20))
+      
+      // Apply secondary color and variants if provided
+      if (branding.secondaryColor) {
+        root.style.setProperty('--color-secondary', branding.secondaryColor)
+        root.style.setProperty('--color-secondary-light', adjustBrightness(branding.secondaryColor, 20))
+        root.style.setProperty('--color-secondary-dark', adjustBrightness(branding.secondaryColor, -20))
+      }
+      
+      console.log('🎨 Applied dynamic colors:', {
+        primary: branding.primaryColor,
+        secondary: branding.secondaryColor || 'not set'
+      })
     }
-  }, [configState.config?.brand?.colors])
-  
-  // Apply SEO metadata when config loads
+  }, [configState.config?.branding])
+
+  // Apply SEO configuration when config loads
   useEffect(() => {
     if (configState.config?.seo) {
       const { seo } = configState.config
       
-      // Update document title
-      document.title = seo.title
-      
-      // Update meta description
-      const metaDescription = document.querySelector('meta[name="description"]')
-      if (metaDescription) {
-        metaDescription.setAttribute('content', seo.description)
-      } else {
-        const meta = document.createElement('meta')
-        meta.name = 'description'
-        meta.content = seo.description
-        document.head.appendChild(meta)
+      // Update document title with localized content
+      const title = getLocalizedContent(seo.title, locale)
+      if (title) {
+        document.title = title
       }
       
-      // Update keywords if provided
-      if (seo.keywords && seo.keywords.length > 0) {
-        const metaKeywords = document.querySelector('meta[name="keywords"]')
-        const keywordsContent = seo.keywords.join(', ')
-        
-        if (metaKeywords) {
-          metaKeywords.setAttribute('content', keywordsContent)
+      // Update meta description with localized content
+      const description = getLocalizedContent(seo.description, locale)
+      if (description) {
+        const metaDescription = document.querySelector('meta[name="description"]')
+        if (metaDescription) {
+          metaDescription.setAttribute('content', description)
         } else {
           const meta = document.createElement('meta')
-          meta.name = 'keywords'
-          meta.content = keywordsContent
+          meta.name = 'description'
+          meta.content = description
           document.head.appendChild(meta)
         }
       }
       
-      // Update Open Graph tags
-      if (seo.ogImage) {
+      // Update Open Graph image
+      if (seo.socialImageUrl) {
         const ogImage = document.querySelector('meta[property="og:image"]')
         if (ogImage) {
-          ogImage.setAttribute('content', seo.ogImage)
+          ogImage.setAttribute('content', seo.socialImageUrl)
         } else {
           const meta = document.createElement('meta')
           meta.setAttribute('property', 'og:image')
-          meta.content = seo.ogImage
+          meta.content = seo.socialImageUrl
           document.head.appendChild(meta)
         }
       }
     }
-  }, [configState.config?.seo])
+  }, [configState.config?.seo, locale])
+
+  // Helper functions for localized content
+  const getTagline = (currentLocale?: string) => {
+    if (!configState.config?.content?.tagline) return ''
+    return getLocalizedContent(configState.config.content.tagline, currentLocale || locale)
+  }
+
+  const getSectionText = (sectionKey: string, currentLocale?: string) => {
+    if (!configState.config?.content?.sections) return ''
+    return getSectionContent(configState.config.content.sections, sectionKey, currentLocale || locale)
+  }
+
+  const contextValue: ConfigContextValue = {
+    ...configState,
+    getTagline,
+    getSectionText
+  }
   
   return (
-    <ConfigContext.Provider value={configState}>
+    <ConfigContext.Provider value={contextValue}>
       {children}
     </ConfigContext.Provider>
   )
@@ -103,14 +142,24 @@ export function useConfigContext(): ConfigContextValue {
 }
 
 // Convenience hooks for specific config sections
-export function useBrandContext() {
+export function useBrandingContext() {
   const { config } = useConfigContext()
-  return config?.brand
+  return config?.branding
 }
 
-export function useStoreContext() {
+export function useProductsContext() {
   const { config } = useConfigContext()
-  return config?.store
+  return config?.products
+}
+
+export function useContentContext() {
+  const { config } = useConfigContext()
+  return config?.content
+}
+
+export function useAssetsContext() {
+  const { config } = useConfigContext()
+  return config?.assets
 }
 
 export function useSeoContext() {
@@ -118,22 +167,8 @@ export function useSeoContext() {
   return config?.seo
 }
 
-export function useNavigationContext() {
-  const { config } = useConfigContext()
-  return config?.navigation
-}
-
-export function useFooterContext() {
-  const { config } = useConfigContext()
-  return config?.footer
-}
-
-export function useSectionsContext() {
-  const { config } = useConfigContext()
-  return config?.sections || []
-}
-
-export function useFeaturesContext() {
-  const { config } = useConfigContext()
-  return config?.features
+// Localization helpers
+export function useLocalizedContent() {
+  const { getTagline, getSectionText } = useConfigContext()
+  return { getTagline, getSectionText }
 }

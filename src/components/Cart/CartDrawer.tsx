@@ -90,9 +90,9 @@ export function CartDrawer() {
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-teal-100 bg-gradient-to-r from-teal-50 to-cyan-50">
+          <div className="flex items-center justify-between p-6 border-b border-primary-100 bg-gradient-to-r from-primary-50 to-secondary-50">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                 <ShoppingBag className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -115,8 +115,8 @@ export function CartDrawer() {
           <div className="flex-1 overflow-y-auto">
             {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-4">
-                  <ShoppingBag className="w-10 h-10 text-teal-500" />
+                <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+                  <ShoppingBag className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-lg font-medium text-gray-800 mb-2">Your cart is empty</h3>
                 <p className="text-gray-600 mb-6">Add some products to get started</p>
@@ -135,7 +135,7 @@ export function CartDrawer() {
                   <div key={`${item.productId}-${item.variantId}`} className="cart-item-card group">
                     <div className="flex space-x-4">
                       {/* Product Image */}
-                      <div className="relative w-20 h-20 bg-teal-50 rounded-xl overflow-hidden flex-shrink-0">
+                      <div className="relative w-20 h-20 bg-primary-50 rounded-xl overflow-hidden flex-shrink-0">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -162,7 +162,7 @@ export function CartDrawer() {
                         {/* Price and Quantity */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <span className="font-medium text-teal-600">${item.price.toFixed(2)}</span>
+                            <span className="font-medium text-primary">${item.price.toFixed(2)}</span>
                             {item.originalPrice && item.originalPrice > item.price && (
                               <span className="text-xs text-gray-400 line-through">
                                 ${item.originalPrice.toFixed(2)}
@@ -176,18 +176,18 @@ export function CartDrawer() {
                               onClick={() =>
                                 updateQuantity(item.productId, item.variantId, Math.max(0, item.quantity - 1))
                               }
-                              className="w-8 h-8 rounded-full bg-teal-100 hover:bg-teal-200 flex items-center justify-center transition-colors duration-200"
+                              className="w-8 h-8 rounded-full bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors duration-200"
                               aria-label="Decrease quantity"
                             >
-                              <Minus className="w-4 h-4 text-teal-600" />
+                              <Minus className="w-4 h-4 text-primary" />
                             </button>
                             <span className="w-8 text-center text-sm font-medium text-gray-800">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
-                              className="w-8 h-8 rounded-full bg-teal-100 hover:bg-teal-200 flex items-center justify-center transition-colors duration-200"
+                              className="w-8 h-8 rounded-full bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors duration-200"
                               aria-label="Increase quantity"
                             >
-                              <Plus className="w-4 h-4 text-teal-600" />
+                              <Plus className="w-4 h-4 text-primary" />
                             </button>
                           </div>
                         </div>
@@ -198,7 +198,7 @@ export function CartDrawer() {
 
                 {/* BOGO Info */}
                 {discount > 0 && (
-                  <div className="bg-gradient-to-r from-teal-500 to-cyan-500 p-4 rounded-2xl text-white">
+                  <div className="bogo-banner p-4 rounded-2xl text-white">
                     <h3 className="font-medium mb-1">BOGO Discount Applied! 🎉</h3>
                     <p className="text-sm text-white/90">
                       You're saving ${discount.toFixed(2)} with our Buy 2 Get 1 FREE offer!
@@ -211,7 +211,7 @@ export function CartDrawer() {
 
           {/* Footer with Totals and Checkout */}
           {items.length > 0 && (
-            <div className="border-t border-teal-100 bg-gradient-to-r from-teal-50 to-cyan-50 p-6 space-y-4">
+            <div className="border-t border-primary-100 bg-gradient-to-r from-primary-50 to-secondary-50 p-6 space-y-4">
               {/* Totals */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -220,13 +220,13 @@ export function CartDrawer() {
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-teal-600">BOGO Discount</span>
-                    <span className="text-teal-600">-${discount.toFixed(2)}</span>
+                    <span className="text-primary">BOGO Discount</span>
+                    <span className="text-primary">-${discount.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-lg font-medium pt-2 border-t border-teal-200">
+                <div className="flex justify-between text-lg font-medium pt-2 border-t border-primary-200">
                   <span className="text-gray-800">Total</span>
-                  <span className="text-teal-600">${total.toFixed(2)}</span>
+                  <span className="text-primary">${total.toFixed(2)}</span>
                 </div>
               </div>
 

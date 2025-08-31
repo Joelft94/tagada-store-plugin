@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* CSS Custom Properties for Dynamic Theming */
+:root {
+  --color-primary: #10B981; /* Default teal */
+  --color-secondary: #3B82F6; /* Default blue */
+  --color-primary-light: #34D399;
+  --color-primary-dark: #059669;
+  --color-secondary-light: #60A5FA;
+  --color-secondary-dark: #2563EB;
+}
+
 @layer base {
   * {
     @apply border-gray-200;
@@ -10,26 +20,43 @@
 }
 
 @layer components {
-  /* Button Variants */
+  /* Button Variants - Using CSS Custom Properties */
   .btn-primary {
-    @apply bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-8 py-3 rounded-full font-medium text-sm tracking-wide hover:from-teal-600 hover:to-cyan-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+    background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+    @apply text-white px-8 py-3 rounded-full font-medium text-sm tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(to right, var(--color-primary-dark), var(--color-secondary-dark));
   }
   
   .btn-secondary {
-    @apply bg-white text-teal-600 px-8 py-3 rounded-full font-medium text-sm tracking-wide border-2 border-teal-200 hover:bg-teal-50 hover:border-teal-300 transition-all duration-300 shadow-md hover:shadow-lg;
+    @apply bg-white px-8 py-3 rounded-full font-medium text-sm tracking-wide border-2 transition-all duration-300 shadow-md hover:shadow-lg;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+  
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 10%, white);
+    border-color: var(--color-primary-dark);
   }
 
   /* Card Variants */
   .feature-card {
-    @apply bg-white rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-pulse;
+    @apply bg-white rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1;
   }
   
   .cart-item-card {
-    @apply bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border border-teal-100;
+    @apply bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 border;
+    border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
   
   .benefit-card {
-    @apply text-center space-y-3 p-4 rounded-xl hover:bg-teal-50 transition-colors duration-300;
+    @apply text-center space-y-3 p-4 rounded-xl transition-colors duration-300;
+  }
+  
+  .benefit-card:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 5%, white);
   }
   
   .ingredient-card {
@@ -46,11 +73,21 @@
 
   /* Icons */
   .icon-container {
-    @apply w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:bg-teal-200 transition-colors duration-300;
+    @apply w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto transition-colors duration-300;
+    background-color: color-mix(in srgb, var(--color-primary) 15%, white);
+  }
+  
+  .icon-container:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 25%, white);
   }
   
   .icon-container-lg {
-    @apply w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-6 mx-auto group-hover:bg-teal-200 transition-colors duration-300;
+    @apply w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto transition-colors duration-300;
+    background-color: color-mix(in srgb, var(--color-primary) 15%, white);
+  }
+  
+  .icon-container-lg:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 25%, white);
   }
   
   .floating-element {
@@ -72,11 +109,19 @@
   }
   
   .ingredient-title {
-    @apply text-lg font-medium text-gray-800 mb-3 group-hover:text-teal-600 transition-colors duration-300;
+    @apply text-lg font-medium text-gray-800 mb-3 transition-colors duration-300;
+  }
+  
+  .ingredient-title:hover {
+    color: var(--color-primary);
   }
   
   .category-title {
-    @apply text-sm font-medium text-gray-800 group-hover:text-teal-600 transition-colors duration-300;
+    @apply text-sm font-medium text-gray-800 transition-colors duration-300;
+  }
+  
+  .category-title:hover {
+    color: var(--color-primary);
   }
   
   .category-icon {
@@ -109,7 +154,8 @@
   }
   
   .newsletter-button {
-    @apply px-8 py-3 bg-white text-teal-600 rounded-full font-medium hover:bg-white/90 transition-colors duration-200;
+    @apply px-8 py-3 bg-white rounded-full font-medium hover:bg-white/90 transition-colors duration-200;
+    color: var(--color-primary);
   }
 
   /* Links */
@@ -123,7 +169,147 @@
 
   /* Shadows */
   .shadow-primary-lg {
-    @apply shadow-xl shadow-teal-500/10;
+    box-shadow: 0 20px 25px -5px color-mix(in srgb, var(--color-primary) 10%, transparent), 
+                0 10px 10px -5px color-mix(in srgb, var(--color-primary) 4%, transparent);
+  }
+
+  /* Dynamic Tailwind-style classes using CSS custom properties */
+  .text-primary {
+    color: var(--color-primary);
+  }
+  
+  .text-secondary {
+    color: var(--color-secondary);
+  }
+  
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+  
+  .bg-secondary {
+    background-color: var(--color-secondary);
+  }
+  
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+  
+  .border-secondary {
+    border-color: var(--color-secondary);
+  }
+
+  .bg-primary-50 {
+    background-color: color-mix(in srgb, var(--color-primary) 5%, white);
+  }
+
+  .bg-primary-100 {
+    background-color: color-mix(in srgb, var(--color-primary) 15%, white);
+  }
+
+  .bg-primary-200 {
+    background-color: color-mix(in srgb, var(--color-primary) 25%, white);
+  }
+
+  .bg-primary-300 {
+    background-color: color-mix(in srgb, var(--color-primary) 35%, white);
+  }
+
+  .border-primary-100 {
+    border-color: color-mix(in srgb, var(--color-primary) 15%, white);
+  }
+
+  .border-primary-200 {
+    border-color: color-mix(in srgb, var(--color-primary) 25%, white);
+  }
+
+  .border-primary-300 {
+    border-color: color-mix(in srgb, var(--color-primary) 35%, white);
+  }
+
+  .bg-secondary-50 {
+    background-color: color-mix(in srgb, var(--color-secondary) 5%, white);
+  }
+
+  /* Gradient color stops */
+  .from-primary {
+    --tw-gradient-from: var(--color-primary) var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  /* Special BOGO banner with guaranteed contrast */
+  .bogo-banner {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white !important;
+  }
+
+  .bogo-banner * {
+    color: white !important;
+  }
+
+  .bogo-banner .text-white\/90 {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .bogo-banner .text-white\/30 {
+    color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .from-primary-50 {
+    --tw-gradient-from: color-mix(in srgb, var(--color-primary) 5%, white) var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  .via-secondary-50 {
+    --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), color-mix(in srgb, var(--color-secondary) 5%, white) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  }
+
+  .to-primary {
+    --tw-gradient-to: var(--color-primary) var(--tw-gradient-to-position);
+  }
+
+  .to-primary-50 {
+    --tw-gradient-to: color-mix(in srgb, var(--color-primary) 5%, white) var(--tw-gradient-to-position);
+  }
+
+  .to-secondary {
+    --tw-gradient-to: var(--color-secondary) var(--tw-gradient-to-position);
+  }
+
+  .to-secondary-50 {
+    --tw-gradient-to: color-mix(in srgb, var(--color-secondary) 5%, white) var(--tw-gradient-to-position);
+  }
+
+  .hover\:bg-primary:hover {
+    background-color: var(--color-primary);
+  }
+
+  .hover\:bg-primary-600:hover {
+    background-color: var(--color-primary-dark);
+  }
+
+  .hover\:text-primary:hover {
+    color: var(--color-primary);
+  }
+
+  /* Additional background colors with transparency */
+  .bg-primary\/40 {
+    background-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  }
+
+  .bg-secondary\/40 {
+    background-color: color-mix(in srgb, var(--color-secondary) 40%, transparent);
+  }
+
+  .bg-primary\/20 {
+    background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  /* Ring colors */
+  .ring-primary {
+    --tw-ring-color: var(--color-primary);
   }
 }
 

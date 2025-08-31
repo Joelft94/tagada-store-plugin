@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useConfig } from './useConfig'
 import { useProducts } from './useProducts'
-import type { Product } from './useProducts'
 
 /**
  * Hook that combines config-driven product selection with product data
@@ -11,28 +10,15 @@ export const useConfigProducts = () => {
   const { config } = useConfig()
   const { products: allProducts, loading, error, refetch } = useProducts()
 
-  // Extract product IDs from config sections
+  // Extract product IDs from simplified config structure
   const configProductIds = useMemo(() => {
-    const productIds = new Set<string>()
-
-    // Get products from featured products section
-    config?.sections?.forEach(section => {
-      if (section.type === 'products' && section.products) {
-        section.products.forEach(product => {
-          if (product.productId) {
-            productIds.add(product.productId)
-          }
-        })
-      }
-    })
-
-    // Add fallback product IDs if config doesn't specify any
-    if (productIds.size === 0) {
-      // Use the mock product IDs as fallback
-      return ['prod_vitamin_c_serum', 'prod_hyaluronic_moisturizer', 'prod_gentle_cleanser']
+    // Get products from config.products.productIds array
+    if (config?.products?.productIds && config.products.productIds.length > 0) {
+      return config.products.productIds
     }
 
-    return Array.from(productIds)
+    // Fallback to mock product IDs if config doesn't specify any
+    return ['prod_vitamin_c_serum', 'prod_hyaluronic_moisturizer', 'prod_gentle_cleanser']
   }, [config])
 
   // Filter products based on config
@@ -44,32 +30,14 @@ export const useConfigProducts = () => {
     )
   }, [allProducts, configProductIds])
 
-  // Get featured products specifically
+  // Get featured products (first 3 products from config)
   const featuredProducts = useMemo(() => {
-    const featuredSection = config?.sections?.find(
-      section => section.type === 'products' && section.id === 'featured-products'
-    )
-
-    if (!featuredSection?.products) return []
-
-    return featuredSection.products.map(configProduct => {
-      const product = allProducts.find(p => p.id === configProduct.productId)
-      if (!product) return null
-
-      // Return product with config metadata
-      return {
-        ...product,
-        featured: configProduct.featured || false,
-        badge: configProduct.badge,
-        selectedVariantId: configProduct.variantId,
-        selectedPriceId: configProduct.priceId
-      }
-    }).filter(Boolean) as (Product & { 
-      badge?: string
-      selectedVariantId?: string
-      selectedPriceId?: string
-    })[]
-  }, [config, allProducts])
+    if (!allProducts.length || !configProductIds.length) return []
+    
+    // Take first 3 products as featured
+    const featuredIds = configProductIds.slice(0, 3)
+    return allProducts.filter(product => featuredIds.includes(product.id))
+  }, [allProducts, configProductIds])
 
   return {
     products: configProducts,
@@ -82,25 +50,19 @@ export const useConfigProducts = () => {
 }
 
 /**
- * Get products by category from config
+ * Get products by category
  */
 export const useConfigProductsByCategory = (categoryId: string) => {
-  const { config } = useConfig()
   const { products: allProducts, loading, error } = useProducts()
 
   const categoryProducts = useMemo(() => {
-    // Get category from config
-    const category = config?.products?.categories?.find(cat => cat.id === categoryId)
-    if (!category) return []
-
     // Filter products by category
     return allProducts.filter(product => product.category === categoryId)
-  }, [allProducts, categoryId, config])
+  }, [allProducts, categoryId])
 
   return {
     products: categoryProducts,
     loading,
-    error,
-    category: config?.products?.categories?.find(cat => cat.id === categoryId)
+    error
   }
 }

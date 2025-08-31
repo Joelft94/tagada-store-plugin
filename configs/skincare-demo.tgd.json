@@ -1,265 +1,59 @@
 {
-  "version": "1.0.0",
-  "name": "Pure Glow Skincare Demo",
-  "description": "Demo configuration for a premium skincare store",
-  
-  "brand": {
-    "name": "Pure Glow Skincare",
-    "colors": {
-      "primary": "#10B981",
-      "secondary": "#3B82F6",
-      "accent": "#F59E0B",
-      "background": "#FFFFFF",
-      "text": "#111827"
-    },
-    "fonts": {
-      "primary": "Inter, system-ui, sans-serif",
-      "secondary": "Playfair Display, serif"
-    }
+  "configName": "skincare-demo",
+  "branding": {
+    "companyName": "Pure Glow Skincare",
+    "primaryColor": "#f6413b",
+    "secondaryColor": "#763bf6",
+    "logoUrl": "/images/logo.png"
   },
-  
-  "store": {
-    "storeId": "store_skincare_demo",
-    "accountId": "acc_47a93cc912de",
-    "environment": "development",
-    "currency": "USD",
-    "locale": "en-US",
-    "promotions": [
-      {
-        "id": "promo_bogo_skincare",
-        "name": "Buy 2 Get 1 FREE",
-        "description": "Mix and match any 3 products from the same category",
-        "active": true
-      },
-      {
-        "id": "promo_first_time_buyer",
-        "name": "First Time Buyer",
-        "description": "15% off your first order",
-        "active": true
-      }
+  "products": {
+    "productIds": [
+      "prod_vitamin_c_serum",
+      "prod_hyaluronic_moisturizer",
+      "prod_gentle_cleanser",
+      "prod_retinol_treatment",
+      "prod_niacinamide_serum",
+      "prod_sunscreen_spf50"
     ]
   },
-  
+  "content": {
+    "tagline": {
+      "en": "Celebrating Australian Nature",
+      "es": "Celebrando la Naturaleza Australiana"
+    },
+    "sections": {
+      "en": {
+        "hero": "Unlock Your Skin's Natural Radiance",
+        "about": "Transform your skincare routine with our curated collection of clean, effective products. Each formula is crafted with premium ingredients and backed by dermatological research.",
+        "guarantee": "30-day money-back guarantee. Love your skin or get your money back."
+      },
+      "es": {
+        "hero": "Desbloquea el Resplandor Natural de tu Piel",
+        "about": "Transforma tu rutina de cuidado de la piel con nuestra colección curada de productos limpios y efectivos.",
+        "guarantee": "Garantía de devolución de dinero de 30 días."
+      }
+    },
+    "footerLinks": [
+      { "label": "Privacy Policy", "url": "/privacy" },
+      { "label": "Terms of Service", "url": "/terms" },
+      { "label": "Returns", "url": "/returns" },
+      { "label": "Contact Us", "url": "/contact" }
+    ]
+  },
+  "assets": {
+    "heroImage": "/images/hero-products.jpg",
+    "logoImage": "/images/logo.png",
+    "placeholderImage": "/images/placeholder.jpg"
+  },
   "seo": {
-    "title": "Pure Glow Skincare - Transform Your Skin Naturally",
-    "description": "Discover premium, natural skincare products that deliver real results. Shop serums, moisturizers, and treatments for radiant, healthy skin.",
-    "keywords": ["skincare", "natural", "organic", "serum", "moisturizer", "anti-aging"],
-    "ogImage": "https://example.com/og-image.jpg"
-  },
-  
-  "navigation": {
-    "logo": {
-      "text": "Pure Glow",
-      "image": "/images/logo.png"
+    "title": {
+      "en": "Pure Glow Skincare - Transform Your Skin Naturally",
+      "es": "Pure Glow Skincare - Transforma tu Piel Naturalmente"
     },
-    "links": [
-      { "label": "Home", "url": "/" },
-      { "label": "Products", "url": "/products" },
-      { "label": "Skincare Quiz", "url": "/quiz" },
-      { "label": "About Us", "url": "/about" },
-      { "label": "Contact", "url": "/contact" }
-    ],
-    "cta": {
-      "text": "Start Your Journey",
-      "url": "/quiz"
-    }
-  },
-  
-  "footer": {
-    "company": {
-      "name": "Pure Glow Skincare",
-      "description": "Transforming skin health through science-backed, natural ingredients.",
-      "address": "123 Beauty Boulevard, Skincare City, SC 12345",
-      "phone": "+1 (555) 123-4567",
-      "email": "hello@pureglow.com"
+    "description": {
+      "en": "Discover premium, natural skincare products that deliver real results. Shop serums, moisturizers, and treatments for radiant, healthy skin.",
+      "es": "Descubre productos premium y naturales para el cuidado de la piel que brindan resultados reales."
     },
-    "links": [
-      {
-        "title": "Shop",
-        "links": [
-          { "label": "All Products", "url": "/products" },
-          { "label": "Cleansers", "url": "/products?category=cleansers" },
-          { "label": "Serums", "url": "/products?category=serums" },
-          { "label": "Moisturizers", "url": "/products?category=moisturizers" },
-          { "label": "Treatments", "url": "/products?category=treatments" }
-        ]
-      },
-      {
-        "title": "Support",
-        "links": [
-          { "label": "Skincare Quiz", "url": "/quiz" },
-          { "label": "How to Use", "url": "/guide" },
-          { "label": "FAQ", "url": "/faq" },
-          { "label": "Contact Us", "url": "/contact" },
-          { "label": "Returns", "url": "/returns" }
-        ]
-      },
-      {
-        "title": "Company",
-        "links": [
-          { "label": "About Us", "url": "/about" },
-          { "label": "Ingredients", "url": "/ingredients" },
-          { "label": "Sustainability", "url": "/sustainability" },
-          { "label": "Reviews", "url": "/reviews" },
-          { "label": "Blog", "url": "/blog" }
-        ]
-      }
-    ],
-    "social": [
-      {
-        "platform": "Instagram",
-        "url": "https://instagram.com/pureglow",
-        "icon": "instagram"
-      },
-      {
-        "platform": "TikTok",
-        "url": "https://tiktok.com/@pureglow",
-        "icon": "tiktok"
-      },
-      {
-        "platform": "YouTube",
-        "url": "https://youtube.com/pureglow",
-        "icon": "youtube"
-      }
-    ],
-    "copyright": "© 2024 Pure Glow Skincare. All rights reserved."
-  },
-  
-  "sections": [
-    {
-      "id": "hero",
-      "type": "hero",
-      "title": "Unlock Your Skin's Natural Radiance",
-      "subtitle": "Science-Backed Skincare Solutions",
-      "description": "Transform your skincare routine with our curated collection of clean, effective products. Each formula is crafted with premium ingredients and backed by dermatological research.",
-      "image": "/images/hero-skincare.jpg",
-      "cta": {
-        "text": "Discover Your Perfect Routine",
-        "url": "/quiz",
-        "primary": true
-      },
-      "order": 1
-    },
-    {
-      "id": "featured-products",
-      "type": "products",
-      "title": "Best Sellers",
-      "subtitle": "Loved by thousands of customers",
-      "description": "Our most popular products that deliver visible results for all skin types.",
-      "order": 2,
-      "products": [
-        {
-          "productId": "prod_vitamin_c_serum",
-          "variantId": "var_30ml",
-          "priceId": "price_usd_4500",
-          "featured": true,
-          "badge": "Best Seller"
-        },
-        {
-          "productId": "prod_hyaluronic_moisturizer",
-          "variantId": "var_50ml",
-          "priceId": "price_usd_3200",
-          "featured": true,
-          "badge": "Hydrating"
-        },
-        {
-          "productId": "prod_gentle_cleanser",
-          "variantId": "var_150ml",
-          "priceId": "price_usd_2400",
-          "featured": true,
-          "badge": "Gentle"
-        }
-      ]
-    },
-    {
-      "id": "skincare-benefits",
-      "type": "features",
-      "title": "Why Choose Pure Glow?",
-      "subtitle": "The difference is in our approach",
-      "order": 3,
-      "testimonials": [
-        {
-          "name": "Sarah M.",
-          "text": "My skin has never looked better! The vitamin C serum completely transformed my complexion in just 4 weeks.",
-          "rating": 5,
-          "image": "/images/testimonial-1.jpg"
-        },
-        {
-          "name": "Jessica L.",
-          "text": "Finally found products that work for my sensitive skin. The gentle cleanser is a game-changer!",
-          "rating": 5,
-          "image": "/images/testimonial-2.jpg"
-        },
-        {
-          "name": "Maria R.",
-          "text": "Love the personalized approach. The skincare quiz helped me find exactly what my skin needed.",
-          "rating": 5,
-          "image": "/images/testimonial-3.jpg"
-        }
-      ]
-    },
-    {
-      "id": "skincare-routine",
-      "type": "cta",
-      "title": "Not Sure Where to Start?",
-      "subtitle": "Take our personalized skincare quiz",
-      "description": "Get product recommendations tailored to your unique skin type, concerns, and goals. It takes just 2 minutes!",
-      "cta": {
-        "text": "Take the Quiz",
-        "url": "/quiz",
-        "primary": true
-      },
-      "order": 4
-    }
-  ],
-  
-  "products": {
-    "categories": [
-      {
-        "id": "cleansers",
-        "name": "Cleansers",
-        "description": "Gentle yet effective cleansers for all skin types",
-        "image": "/images/category-cleansers.jpg"
-      },
-      {
-        "id": "serums",
-        "name": "Serums",
-        "description": "Targeted treatments for specific skin concerns",
-        "image": "/images/category-serums.jpg"
-      },
-      {
-        "id": "moisturizers",
-        "name": "Moisturizers",
-        "description": "Hydrating formulas to nourish and protect",
-        "image": "/images/category-moisturizers.jpg"
-      },
-      {
-        "id": "treatments",
-        "name": "Treatments",
-        "description": "Specialized products for advanced skincare needs",
-        "image": "/images/category-treatments.jpg"
-      }
-    ],
-    "filters": {
-      "price": true,
-      "category": true,
-      "rating": true,
-      "availability": true
-    }
-  },
-  
-  "features": {
-    "cart": true,
-    "checkout": true,
-    "wishlist": true,
-    "reviews": true,
-    "search": true,
-    "filters": true,
-    "recommendations": true
-  },
-  
-  "analytics": {
-    "googleAnalytics": "G-XXXXXXXXXX",
-    "facebookPixel": "123456789012345"
+    "socialImageUrl": "/images/og-image.jpg"
   }
 }

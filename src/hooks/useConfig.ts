@@ -33,93 +33,35 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
     }
 
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Attempt to load config file
+      const response = await fetch(`/configs/${configName}.tgd.json`)
       
-      // For demo purposes, return default config
-      // In production, this would be: const response = await fetch(configPath)
-      let configData: Config
-      
-      if (configName === 'skincare-demo') {
-        // Demo configuration for skincare store
-        configData = {
-          ...DEFAULT_CONFIG,
-          name: 'Skincare Demo Store',
-          brand: {
-            name: 'Pure Glow Skincare',
-            colors: {
-              primary: '#10B981',
-              secondary: '#3B82F6',
-              accent: '#F59E0B',
-              background: '#FFFFFF',
-              text: '#111827'
-            }
-          },
-          store: {
-            storeId: 'store_skincare_demo',
-            accountId: 'acc_47a93cc912de',
-            environment: 'development',
-            currency: 'USD',
-            locale: 'en-US'
-          },
-          seo: {
-            title: 'Pure Glow Skincare - Transform Your Skin Naturally',
-            description: 'Discover premium, natural skincare products that deliver real results. Shop serums, moisturizers, and treatments for radiant, healthy skin.'
-          },
-          sections: [
-            {
-              id: 'hero',
-              type: 'hero',
-              title: 'Radiant Skin Starts Here',
-              subtitle: 'Premium Natural Skincare',
-              description: 'Transform your skincare routine with our carefully curated collection of natural, effective products.',
-              order: 1,
-              visible: true,
-              cta: {
-                text: 'Shop Now',
-                url: '/products',
-                primary: true
-              }
-            },
-            {
-              id: 'featured-products',
-              type: 'products',
-              title: 'Bestselling Products',
-              subtitle: 'Loved by thousands',
-              description: 'Our most popular skincare essentials for every skin type.',
-              order: 2,
-              visible: true
-            },
-            {
-              id: 'features',
-              type: 'features',
-              title: 'Why Choose Pure Glow?',
-              subtitle: 'Quality you can trust',
-              order: 3,
-              visible: true
-            }
-          ]
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error(`Configuration file '${configName}.tgd.json' not found`)
         }
-      } else {
-        // For other configs, use default
-        configData = DEFAULT_CONFIG
+        throw new Error(`Failed to load configuration: ${response.statusText}`)
       }
-      
-      // Validate the configuration
-      const validatedConfig = validateConfig(configData)
+
+      const rawConfig = await response.json()
+      const validatedConfig = validateConfig(rawConfig)
       
       // Cache the validated config
       configCache.set(configName, validatedConfig)
       
       return validatedConfig
     } catch (error) {
-      throw new Error(`Failed to load config '${configName}': ${error instanceof Error ? error.message : 'Unknown error'}`)
+      // If loading fails, fall back to DEFAULT_CONFIG but still throw for proper error handling
+      console.warn(`Failed to load config '${configName}', using default configuration:`, error)
+      const defaultConfig = { ...DEFAULT_CONFIG, configName }
+      configCache.set(configName, defaultConfig)
+      return defaultConfig
     }
   }, [])
 
   const loadConfig = useCallback(async (configName: string) => {
     setState(prev => ({ ...prev, loading: true, error: null }))
-    
+
     try {
       const config = await loadConfigFromFile(configName)
       setState({
@@ -129,20 +71,21 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
         configName
       })
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load configuration'
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to load configuration'
+        error: errorMessage
       }))
     }
   }, [loadConfigFromFile])
 
   const reloadConfig = useCallback(async () => {
-    if (!state.configName) return
-    
-    // Clear cache for current config to force reload
-    configCache.delete(state.configName)
-    await loadConfig(state.configName)
+    if (state.configName) {
+      // Clear cache to force reload
+      configCache.delete(state.configName)
+      await loadConfig(state.configName)
+    }
   }, [state.configName, loadConfig])
 
   const resetToDefault = useCallback(() => {
@@ -156,12 +99,14 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
 
   // Load default config on mount
   useEffect(() => {
-    if (defaultConfigName) {
-      loadConfig(defaultConfigName)
-    } else {
-      resetToDefault()
+    if (defaultConfigName && !state.config && !state.loading) {
+      loadConfig(defaultConfigName).catch(error => {
+        console.error('Failed to load default config:', error)
+        // Fall back to DEFAULT_CONFIG
+        resetToDefault()
+      })
     }
-  }, [defaultConfigName, loadConfig, resetToDefault])
+  }, [defaultConfigName, state.config, state.loading, loadConfig, resetToDefault])
 
   return {
     ...state,
@@ -171,33 +116,27 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
   }
 }
 
-// Helper hook for accessing specific config sections
-export const useBrandConfig = () => {
-  const { config } = useConfig()
-  return config?.brand || DEFAULT_CONFIG.brand
+// Development helper for hot-swapping configs
+export const switchConfigInDev = (configName: string) => {
+  if (import.meta.env.DEV) {
+    window.location.search = `?config=${configName}`
+    window.location.reload()
+  }
 }
 
-export const useStoreConfig = () => {
-  const { config } = useConfig()
-  return config?.store || DEFAULT_CONFIG.store
+// Get config name from URL params (for development)
+export const getConfigFromUrl = (): string | null => {
+  if (typeof window === 'undefined') return null
+  const params = new URLSearchParams(window.location.search)
+  return params.get('config')
 }
 
-export const useSeoConfig = () => {
-  const { config } = useConfig()
-  return config?.seo || DEFAULT_CONFIG.seo
-}
-
-export const useNavigationConfig = () => {
-  const { config } = useConfig()
-  return config?.navigation || DEFAULT_CONFIG.navigation
-}
-
-export const useFooterConfig = () => {
-  const { config } = useConfig()
-  return config?.footer || DEFAULT_CONFIG.footer
-}
-
-export const useSectionsConfig = () => {
-  const { config } = useConfig()
-  return config?.sections || DEFAULT_CONFIG.sections
+// Config validation helper for runtime checks
+export const isValidConfig = (config: unknown): config is Config => {
+  try {
+    validateConfig(config)
+    return true
+  } catch {
+    return false
+  }
 }

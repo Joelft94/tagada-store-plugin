@@ -41,15 +41,15 @@ export function Home() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-teal-50 via-cyan-50 to-emerald-50 min-h-screen flex items-center pt-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary-50 via-secondary-50 to-primary-50 min-h-screen flex items-center pt-20 overflow-hidden">
         <div
           className="absolute inset-0 opacity-20"
           style={{
             transform: `translateY(${scrollY * 0.5}px)`,
           }}
         >
-          <div className="absolute top-20 left-10 w-32 h-32 bg-teal-300/40 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-48 h-48 bg-cyan-300/40 rounded-full blur-xl animate-pulse delay-1000"></div>
+          <div className="absolute top-20 left-10 w-32 h-32 bg-primary/40 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-48 h-48 bg-secondary/40 rounded-full blur-xl animate-pulse delay-1000"></div>
           <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-emerald-200/30 rounded-full blur-lg animate-pulse delay-500"></div>
         </div>
 
@@ -63,13 +63,13 @@ export function Home() {
               }`}
             >
               <div className="space-y-6">
-                <p className="text-teal-600 text-sm uppercase tracking-wider font-medium">
+                <p className="text-primary text-sm uppercase tracking-wider font-medium">
                   Premium Australian Skincare
                 </p>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-800 leading-tight">
                   Celebrating
                   <br />
-                  <span className="text-teal-500 relative">
+                  <span className="text-primary relative">
                     Australian Nature
                     <svg
                       className="absolute -bottom-2 left-0 w-full h-3"
@@ -104,7 +104,7 @@ export function Home() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className="w-4 h-4 fill-teal-400 text-teal-400"
+                      className="w-4 h-4 fill-primary text-primary"
                     />
                   ))}
                 </div>
@@ -129,11 +129,11 @@ export function Home() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-teal-500/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
               <div className="floating-element -top-4 -right-4">
-                <Leaf className="w-6 h-6 text-teal-500" />
+                <Leaf className="w-6 h-6 text-primary" />
               </div>
               <div className="floating-element -bottom-4 -left-4 animation-delay-500">
                 <Sparkles className="w-6 h-6 text-emerald-500" />
@@ -171,7 +171,7 @@ export function Home() {
                 style={{ animationDelay: feature.delay }}
               >
                 <div className="icon-container">
-                  <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-teal-500 group-hover:scale-110 transition-transform duration-300" />
+                  <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <p className="feature-text">{feature.title}</p>
               </div>
@@ -181,8 +181,8 @@ export function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 bg-gradient-to-r from-teal-50 to-cyan-50 text-center">
-        <Link to="/products" className="inline-flex items-center bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group">
+      <section className="py-12 bg-gradient-to-r from-primary-50 to-secondary-50 text-center">
+        <Link to="/products" className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group">
           SHOP NOW
           <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
         </Link>

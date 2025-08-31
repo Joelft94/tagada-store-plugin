@@ -32,7 +32,7 @@ export function ProductDetail() {
     return (
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Loading product...</p>
         </div>
       </div>
@@ -45,7 +45,7 @@ export function ProductDetail() {
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">Error loading product: {error}</p>
-          <Link to="/products" className="text-teal-600 hover:text-teal-700">
+          <Link to="/products" className="text-primary hover:text-primary">
             ← Back to Products
           </Link>
         </div>
@@ -60,7 +60,7 @@ export function ProductDetail() {
         <div className="text-center">
           <h1 className="text-2xl font-light text-gray-800 mb-4">Product Not Found</h1>
           <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
-          <Link to="/products" className="text-teal-600 hover:text-teal-700">
+          <Link to="/products" className="text-primary hover:text-primary">
             ← Back to Products
           </Link>
         </div>
@@ -101,7 +101,7 @@ export function ProductDetail() {
       <div className="container mx-auto px-6 py-4">
         <Link
           to="/products"
-          className="flex items-center space-x-2 text-gray-600 hover:text-teal-500 transition-colors duration-200"
+          className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors duration-200"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm">Back to Products</span>
@@ -113,7 +113,7 @@ export function ProductDetail() {
           {/* Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-square bg-teal-50 rounded-3xl overflow-hidden shadow-primary-lg">
+            <div className="aspect-square bg-primary-50 rounded-3xl overflow-hidden shadow-primary-lg">
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
@@ -127,8 +127,8 @@ export function ProductDetail() {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`w-20 h-20 bg-teal-50 rounded-xl overflow-hidden transition-all duration-200 ${
-                    selectedImage === index ? 'ring-2 ring-teal-500 scale-105' : 'hover:scale-105'
+                  className={`w-20 h-20 bg-primary-50 rounded-xl overflow-hidden transition-all duration-200 ${
+                    selectedImage === index ? 'ring-2 ring-primary scale-105' : 'hover:scale-105'
                   }`}
                 >
                   <img
@@ -151,7 +151,7 @@ export function ProductDetail() {
                     <Star
                       key={i}
                       className={`w-5 h-5 ${
-                        i < Math.floor(product.rating || 0) ? 'fill-teal-400 text-teal-400' : 'text-gray-300'
+                        i < Math.floor(product.rating || 0) ? 'fill-primary text-primary' : 'text-gray-300'
                       }`}
                     />
                   ))}
@@ -170,7 +170,7 @@ export function ProductDetail() {
                   >
                     <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-teal-100 hover:text-teal-500 flex items-center justify-center transition-colors duration-200">
+                  <button className="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-primary-100 hover:text-primary flex items-center justify-center transition-colors duration-200">
                     <Share2 className="w-5 h-5" />
                   </button>
                 </div>
@@ -179,7 +179,7 @@ export function ProductDetail() {
               <h1 className="text-3xl md:text-4xl font-light text-gray-800">{product.name}</h1>
 
               <div className="flex items-center space-x-4">
-                <span className="text-3xl font-light text-teal-600">
+                <span className="text-3xl font-light text-primary">
                   ${selectedVariant?.prices[0] ? (selectedVariant.prices[0].amount / 100).toFixed(2) : '0.00'}
                 </span>
                 {selectedVariant?.prices[0]?.originalAmount && selectedVariant.prices[0].originalAmount > selectedVariant.prices[0].amount && (
@@ -191,7 +191,7 @@ export function ProductDetail() {
             </div>
 
             {/* BOGO Offer Banner */}
-            <div className="bg-gradient-to-r from-teal-500 to-cyan-500 p-6 rounded-2xl text-white relative overflow-hidden">
+            <div className="bogo-banner p-6 rounded-2xl text-white relative overflow-hidden">
               <div className="absolute top-2 right-2">
                 <Gift className="w-8 h-8 text-white/30" />
               </div>
@@ -213,8 +213,8 @@ export function ProductDetail() {
                     onClick={() => setSelectedVariant(variant)}
                     className={`p-4 rounded-xl border-2 transition-all duration-200 text-center ${
                       selectedVariant?.id === variant.id
-                        ? 'border-teal-500 bg-teal-50 text-teal-700'
-                        : 'border-gray-200 hover:border-teal-300 hover:bg-teal-50'
+                        ? 'border-primary bg-primary-50 text-primary'
+                        : 'border-gray-200 hover:border-primary-300 hover:bg-primary-50'
                     }`}
                   >
                     <div className="font-medium">{variant.name}</div>
@@ -233,21 +233,21 @@ export function ProductDetail() {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 rounded-full bg-teal-100 hover:bg-teal-200 flex items-center justify-center transition-colors duration-200"
+                    className="w-10 h-10 rounded-full bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors duration-200"
                   >
-                    <Minus className="w-5 h-5 text-teal-600" />
+                    <Minus className="w-5 h-5 text-primary" />
                   </button>
                   <span className="w-12 text-center text-lg font-medium text-gray-800">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 rounded-full bg-teal-100 hover:bg-teal-200 flex items-center justify-center transition-colors duration-200"
+                    className="w-10 h-10 rounded-full bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors duration-200"
                   >
-                    <Plus className="w-5 h-5 text-teal-600" />
+                    <Plus className="w-5 h-5 text-primary" />
                   </button>
                 </div>
               </div>
 
-              <button onClick={handleAddToCart} className="w-full bg-teal-500 hover:bg-teal-600 text-white px-6 py-4 rounded-full transition-colors duration-200 font-medium text-lg flex items-center justify-center">
+              <button onClick={handleAddToCart} className="w-full bg-primary hover:bg-primary-600 text-white px-6 py-4 rounded-full transition-colors duration-200 font-medium text-lg flex items-center justify-center">
                 <ShoppingBag className="w-5 h-5 mr-2" />
                 Add to Cart - ${((selectedVariant?.prices[0]?.amount || 0) / 100 * quantity).toFixed(2)}
               </button>
@@ -271,7 +271,7 @@ export function ProductDetail() {
                     'Cruelty-free formula'
                   ].map((benefit, index) => (
                     <li key={index} className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-teal-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
                       <span className="text-gray-600">{benefit}</span>
                     </li>
                   ))}

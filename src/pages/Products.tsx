@@ -69,7 +69,7 @@ export function Products() {
     return (
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Loading products...</p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function Products() {
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 mb-4">Error loading products: {error}</p>
-          <Link to="/" className="text-teal-600 hover:text-teal-700">
+          <Link to="/" className="text-primary hover:text-primary">
             ← Back to Home
           </Link>
         </div>
@@ -95,7 +95,7 @@ export function Products() {
       <div className="container mx-auto px-6 py-4">
         <Link
           to="/"
-          className="flex items-center space-x-2 text-gray-600 hover:text-teal-500 transition-colors duration-200 mb-6"
+          className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors duration-200 mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm">Back to Home</span>
@@ -114,7 +114,7 @@ export function Products() {
         {displayProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">No products available at the moment.</p>
-            <Link to="/" className="text-teal-600 hover:text-teal-700">
+            <Link to="/" className="text-primary hover:text-primary">
               ← Back to Home
             </Link>
           </div>
@@ -124,7 +124,7 @@ export function Products() {
               <div key={product.id} className="group">
                 <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
                   {/* Product Image */}
-                  <div className="aspect-square bg-teal-50 overflow-hidden">
+                  <div className="aspect-square bg-primary-50 overflow-hidden">
                     <img
                       src={product.images[0] || '/images/placeholder.jpg'}
                       alt={product.name}
@@ -143,7 +143,7 @@ export function Products() {
                               key={i}
                               className={`w-4 h-4 ${
                                 i < Math.floor(product.rating!)
-                                  ? 'fill-teal-400 text-teal-400'
+                                  ? 'fill-primary text-primary'
                                   : 'text-gray-300'
                               }`}
                             />
@@ -163,7 +163,7 @@ export function Products() {
 
                     {/* Price */}
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl font-light text-teal-600">${product.price.toFixed(2)}</span>
+                      <span className="text-2xl font-light text-primary">${product.price.toFixed(2)}</span>
                       {product.originalPrice && product.originalPrice > product.price && (
                         <span className="text-lg text-gray-400 line-through">
                           ${product.originalPrice.toFixed(2)}
@@ -175,13 +175,13 @@ export function Products() {
                     <div className="flex flex-col sm:flex-row gap-3">
                       <Link
                         to={`/products/${product.id}`}
-                        className="flex-1 bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-full text-center transition-colors duration-200 font-medium text-sm"
+                        className="flex-1 bg-primary hover:bg-primary-600 text-white px-6 py-3 rounded-full text-center transition-colors duration-200 font-medium text-sm"
                       >
                         View Details
                       </Link>
                       <button 
                         onClick={(e) => handleAddToCart(product, e)}
-                        className="flex-1 border-2 border-teal-200 text-teal-600 hover:bg-teal-50 px-6 py-3 rounded-full transition-colors duration-200 font-medium text-sm flex items-center justify-center"
+                        className="flex-1 border-2 border-primary-200 text-primary hover:bg-primary-50 px-6 py-3 rounded-full transition-colors duration-200 font-medium text-sm flex items-center justify-center"
                       >
                         <ShoppingBag className="w-4 h-4 mr-2" />
                         Quick Add
@@ -196,7 +196,7 @@ export function Products() {
       </div>
 
       {/* BOGO Banner */}
-      <section className="py-16 bg-gradient-to-r from-teal-500 to-cyan-500">
+      <section className="py-16 bogo-banner">
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-2xl mx-auto space-y-6">
             <h2 className="text-3xl md:text-4xl font-light text-white mb-4">Special Offer</h2>
