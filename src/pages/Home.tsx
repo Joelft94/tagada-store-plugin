@@ -11,11 +11,16 @@ import {
   Star,
 } from "lucide-react";
 import { useCartContext } from "../contexts/CartProvider";
+import { useConfigProducts } from "../hooks/useConfigProducts";
 
 export function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const { addItem, openCart } = useCartContext();
+  const { products, loading } = useConfigProducts();
+
+  // Get the first product for the hero section
+  const firstProduct = products?.[0];
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -25,18 +30,31 @@ export function Home() {
   }, []);
 
   const handleQuickAdd = () => {
+    if (!firstProduct) {
+      console.warn("No products available for quick add");
+      return;
+    }
+
+    // Get the first variant and price for the real product
+    const firstVariant = firstProduct.variants?.[0];
+    const firstPrice = firstVariant?.prices?.[0];
+    const realPriceAmount = firstPrice?.currencyOptions?.USD?.amount;
+
     addItem({
-      productId: "hydrating-serum",
-      variantId: "30ml",
-      priceId: "price_hydrating_serum_30ml", // Will be actual Tagada priceId
-      name: "Hydrating Botanical Serum",
-      price: 89.99,
-      originalPrice: 109.99,
-      image: "/images/hero-products.jpg",
-      category: "face-care",
+      productId: firstProduct.id,
+      variantId: firstVariant?.id || "default",
+      priceId: firstPrice?.id || "default",
+      name: firstProduct.name,
+      price: realPriceAmount ? realPriceAmount / 100 : 29.99, // Convert from cents to dollars
+      image: firstVariant?.imageUrl || "/images/hero-products.jpg",
+      category: "skincare",
     });
     openCart();
   };
+
+  // Get the hero image from the first product or fallback
+  const heroImage =
+    firstProduct?.variants?.[0]?.imageUrl || "/images/hero-products.jpg";
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -95,8 +113,12 @@ export function Home() {
                   OUR PRODUCTS
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
-                <button onClick={handleQuickAdd} className="btn-secondary">
-                  TRY SAMPLE
+                <button
+                  onClick={handleQuickAdd}
+                  className="btn-secondary"
+                  disabled={loading || !firstProduct}
+                >
+                  {loading ? "LOADING..." : "TRY SAMPLE"}
                 </button>
               </div>
               <div className="flex items-center space-x-6 pt-4">
@@ -124,8 +146,12 @@ export function Home() {
               <div className="relative group">
                 <div className="aspect-square overflow-hidden rounded-3xl shadow-primary-lg">
                   <img
-                    src="/images/hero-products.jpg"
-                    alt="Premium skincare products with pink flowers and facial tools"
+                    src={heroImage}
+                    alt={
+                      firstProduct
+                        ? `${firstProduct.name} - Premium skincare product`
+                        : "Premium skincare products with pink flowers and facial tools"
+                    }
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
