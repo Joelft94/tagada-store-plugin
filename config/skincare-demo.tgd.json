@@ -6,16 +6,13 @@
     "secondaryColor": "#763bf6",
     "logoUrl": "/images/logo.png"
   },
-  "products": {
-    "productIds": [
-      "prod_vitamin_c_serum",
-      "prod_hyaluronic_moisturizer",
-      "prod_gentle_cleanser",
-      "prod_retinol_treatment",
-      "prod_niacinamide_serum",
-      "prod_sunscreen_spf50"
-    ]
-  },
+  "productIds": [
+    "product_4eb82d9586a2",
+    "product_2fa71c2fa11d", 
+    "product_fc1bd0cfe97a",
+    "product_5dee57124c5e",
+    "product_2447c222eb51"
+  ],
   "content": {
     "tagline": {
       "en": "Celebrating Australian Nature",

@@ -147,9 +147,9 @@ export function useBrandingContext() {
   return config?.branding
 }
 
-export function useProductsContext() {
+export function useProductIdsContext() {
   const { config } = useConfigContext()
-  return config?.products
+  return config?.productIds
 }
 
 export function useContentContext() {

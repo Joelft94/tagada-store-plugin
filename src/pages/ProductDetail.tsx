@@ -2,13 +2,35 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Star, Heart, Share2, Plus, Minus, ShoppingBag, Gift } from 'lucide-react'
 import { useCartContext } from '../contexts/CartProvider'
-import { useProducts, type ProductVariant } from '../hooks/useProducts'
+import { useConfigProducts } from '../hooks/useConfigProducts'
+// Using SDK types but defining ProductVariant locally to avoid import issues
+interface ProductVariant {
+  id: string
+  name: string
+  sku?: string
+  weight?: number
+  imageUrl?: string
+  default?: boolean
+  prices: Array<{
+    id: string
+    amount: number
+    currency: string
+    recurring: boolean
+    interval?: string
+    intervalCount?: number
+    default?: boolean
+    currencyOptions: Record<string, {
+      amount: number
+      currency: string
+    }>
+  }>
+}
 import { toast } from 'sonner'
 
 export function ProductDetail() {
   const { productId } = useParams<{ productId: string }>()
   const { addItem } = useCartContext()
-  const { products, loading, error } = useProducts()
+  const { products, loading, error } = useConfigProducts()
   
   // Find the product by ID
   const product = products.find(p => p.id === productId)
@@ -16,7 +38,6 @@ export function ProductDetail() {
   // Debug logging removed
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
-  const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
 
@@ -44,7 +65,7 @@ export function ProductDetail() {
     return (
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Error loading product: {error}</p>
+          <p className="text-red-600 mb-4">Error loading product: {error?.message || 'Unknown error'}</p>
           <Link to="/products" className="text-primary hover:text-primary">
             ← Back to Products
           </Link>
@@ -73,21 +94,21 @@ export function ProductDetail() {
 
     try {
       const selectedPrice = selectedVariant.prices[0] // Use first price
+      const realPriceAmount = selectedPrice?.currencyOptions?.USD?.amount || 2999 // Extract from currencyOptions
       
       addItem({
         productId: product.id,
         variantId: selectedVariant.id,
-        priceId: selectedPrice.id,
+        priceId: selectedPrice?.id || 'default',
         quantity,
         name: product.name,
-        image: product.images[0],
-        price: selectedPrice.amount / 100, // Convert cents to dollars
-        originalPrice: selectedPrice.originalAmount ? selectedPrice.originalAmount / 100 : undefined,
-        category: product.category
+        image: product.variants?.[0]?.imageUrl || '/images/hero-products.jpg',
+        price: realPriceAmount / 100, // Convert cents to dollars using real price
+        category: 'general' // Default category since SDK doesn't provide this
       })
       
       toast.success(`Added ${quantity} ${product.name} to cart`, {
-        description: `${selectedVariant.name} - $${(selectedPrice.amount / 100).toFixed(2)}`
+        description: `${selectedVariant.name} - $${(realPriceAmount / 100).toFixed(2)}`
       })
     } catch (error) {
       toast.error('Failed to add item to cart')
@@ -115,30 +136,24 @@ export function ProductDetail() {
             {/* Main Image */}
             <div className="aspect-square bg-primary-50 rounded-3xl overflow-hidden shadow-primary-lg">
               <img
-                src={product.images[selectedImage]}
+                src={product.variants?.[0]?.imageUrl || '/images/hero-products.jpg'}
                 alt={product.name}
                 className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
               />
             </div>
 
-            {/* Thumbnail Images */}
-            <div className="flex space-x-4">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`w-20 h-20 bg-primary-50 rounded-xl overflow-hidden transition-all duration-200 ${
-                    selectedImage === index ? 'ring-2 ring-primary scale-105' : 'hover:scale-105'
-                  }`}
-                >
+            {/* Thumbnail Images - Show variant image */}
+            {product.variants?.[0]?.imageUrl && (
+              <div className="flex space-x-4">
+                <div className="w-20 h-20 bg-primary-50 rounded-xl overflow-hidden ring-2 ring-primary scale-105">
                   <img
-                    src={image}
-                    alt={`${product.name} view ${index + 1}`}
+                    src={product.variants[0].imageUrl}
+                    alt={`${product.name} view`}
                     className="w-full h-full object-cover"
                   />
-                </button>
-              ))}
-            </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Product Details */}
@@ -150,13 +165,11 @@ export function ProductDetail() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-5 h-5 ${
-                        i < Math.floor(product.rating || 0) ? 'fill-primary text-primary' : 'text-gray-300'
-                      }`}
+                      className="w-5 h-5 text-gray-300"
                     />
                   ))}
                   <span className="text-sm text-gray-600 ml-2">
-                    {product.rating || 'N/A'} {product.reviewCount && `(${product.reviewCount} reviews)`}
+                    No reviews yet
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -180,13 +193,8 @@ export function ProductDetail() {
 
               <div className="flex items-center space-x-4">
                 <span className="text-3xl font-light text-primary">
-                  ${selectedVariant?.prices[0] ? (selectedVariant.prices[0].amount / 100).toFixed(2) : '0.00'}
+                  ${selectedVariant?.prices[0]?.currencyOptions?.USD?.amount ? (selectedVariant.prices[0].currencyOptions.USD.amount / 100).toFixed(2) : '29.99'}
                 </span>
-                {selectedVariant?.prices[0]?.originalAmount && selectedVariant.prices[0].originalAmount > selectedVariant.prices[0].amount && (
-                  <span className="text-xl text-gray-400 line-through">
-                    ${(selectedVariant.prices[0].originalAmount / 100).toFixed(2)}
-                  </span>
-                )}
               </div>
             </div>
 
@@ -219,7 +227,7 @@ export function ProductDetail() {
                   >
                     <div className="font-medium">{variant.name}</div>
                     <div className="text-sm text-gray-600 mt-1">
-                      ${variant.prices[0] ? (variant.prices[0].amount / 100).toFixed(2) : '0.00'}
+                      ${variant.prices[0]?.currencyOptions?.USD?.amount ? (variant.prices[0].currencyOptions.USD.amount / 100).toFixed(2) : '29.99'}
                     </div>
                   </button>
                 ))}
@@ -249,7 +257,7 @@ export function ProductDetail() {
 
               <button onClick={handleAddToCart} className="w-full bg-primary hover:bg-primary-600 text-white px-6 py-4 rounded-full transition-colors duration-200 font-medium text-lg flex items-center justify-center">
                 <ShoppingBag className="w-5 h-5 mr-2" />
-                Add to Cart - ${((selectedVariant?.prices[0]?.amount || 0) / 100 * quantity).toFixed(2)}
+                Add to Cart - ${((selectedVariant?.prices[0]?.currencyOptions?.USD?.amount || 2999) / 100 * quantity).toFixed(2)}
               </button>
             </div>
 

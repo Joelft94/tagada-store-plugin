@@ -18,6 +18,31 @@ interface UseConfigReturn extends ConfigState {
 // In-memory config cache for development
 const configCache = new Map<string, Config>()
 
+// Helper to get config name from URL or environment
+const getActiveConfigName = (defaultConfigName?: string): string => {
+  // Check URL query parameter first (for hot-switching in dev)
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlConfig = urlParams.get('config')
+    if (urlConfig) {
+      console.log('🔥 Hot config switching: Using config from URL:', urlConfig)
+      return urlConfig
+    }
+  }
+  
+  // Check environment variable
+  const envConfig = import.meta.env.VITE_CONFIG_NAME
+  if (envConfig) {
+    console.log('🔧 Using config from environment:', envConfig)
+    return envConfig
+  }
+  
+  // Fall back to default
+  const configName = defaultConfigName || 'default'
+  console.log('📋 Using default config:', configName)
+  return configName
+}
+
 export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
   const [state, setState] = useState<ConfigState>({
     config: null,
@@ -26,6 +51,9 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
     configName: null
   })
 
+  // Track URL changes for hot-switching
+  const [urlChangeCounter, setUrlChangeCounter] = useState(0)
+
   const loadConfigFromFile = useCallback(async (configName: string): Promise<Config> => {
     // Check cache first
     if (configCache.has(configName)) {
@@ -33,8 +61,8 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
     }
 
     try {
-      // Attempt to load config file
-      const response = await fetch(`/configs/${configName}.tgd.json`)
+      // Attempt to load config file from /config/ (not /configs/)
+      const response = await fetch(`/config/${configName}.tgd.json`)
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -97,16 +125,30 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
     })
   }, [])
 
-  // Load default config on mount
+  // Listen for URL changes in development for hot-switching
   useEffect(() => {
-    if (defaultConfigName && !state.config && !state.loading) {
-      loadConfig(defaultConfigName).catch(error => {
-        console.error('Failed to load default config:', error)
+    if (import.meta.env.DEV && typeof window !== 'undefined') {
+      const handlePopState = () => {
+        setUrlChangeCounter(prev => prev + 1)
+      }
+      
+      window.addEventListener('popstate', handlePopState)
+      return () => window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
+
+  // Load config based on URL params or default
+  useEffect(() => {
+    const activeConfigName = getActiveConfigName(defaultConfigName)
+    
+    if (!state.config || state.configName !== activeConfigName) {
+      loadConfig(activeConfigName).catch(error => {
+        console.error('Failed to load config:', error)
         // Fall back to DEFAULT_CONFIG
         resetToDefault()
       })
     }
-  }, [defaultConfigName, state.config, state.loading, loadConfig, resetToDefault])
+  }, [defaultConfigName, urlChangeCounter, state.config, state.configName, loadConfig, resetToDefault])
 
   return {
     ...state,

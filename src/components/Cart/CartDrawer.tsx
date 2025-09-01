@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useCartContext } from '../../contexts/CartProvider'
 import { useCheckout } from '../../hooks/useCheckout'
+import { usePluginConfig } from '@tagadapay/plugin-sdk/react'
 import { X, Plus, Minus, ShoppingBag, Trash2, Loader } from 'lucide-react'
 
 export function CartDrawer() {
@@ -15,11 +16,11 @@ export function CartDrawer() {
     closeCart, 
     updateQuantity, 
     removeItem,
-    clearCart,
-    getLineItems
+    clearCart
   } = useCartContext()
   
-  const { init: initCheckout } = useCheckout()
+  const { init } = useCheckout()
+  const { storeId } = usePluginConfig()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   // Prevent body scroll when cart is open
@@ -41,24 +42,41 @@ export function CartDrawer() {
     
     setIsCheckingOut(true)
     try {
-      const lineItems = getLineItems()
-      const result = await initCheckout({
+      // Convert cart items to Tagada line items format
+      const lineItems = items.map(item => ({
+        variantId: item.variantId,
+        priceId: item.priceId,
+        quantity: item.quantity
+      }))
+      
+      console.log('🚀 Initializing REAL Tagada checkout with:', {
+        storeId,
         lineItems,
-        cartToken,
-        // Optional: add promotion IDs or store ID
-        // promotionIds: ['promo_bogo_skincare'],
-        // storeId: 'store_demo_skincare'
+        cartToken
       })
       
-      if (result.success && result.checkoutUrl) {
-        // Redirect to Tagada checkout
+      const result = await init({
+        storeId,
+        lineItems,
+        cartToken
+      })
+      
+      console.log('✅ REAL Tagada checkout session initialized:', result)
+      console.log('  - Checkout URL:', result?.checkoutUrl)
+      console.log('  - Session ID:', result?.checkoutSession?.id)
+      
+      // Redirect to checkout URL as per SPECIFICATIONS.md
+      if (result?.checkoutUrl) {
+        console.log('🔗 Redirecting to checkout URL:', result.checkoutUrl)
         window.location.href = result.checkoutUrl
+        return
       } else {
-        // Handle checkout error
-        alert(`Checkout failed: ${result.error || 'Unknown error'}`)
+        console.warn('⚠️ No checkout URL returned from Tagada init')
+        alert('Checkout session created but no redirect URL provided. Check console for details.')
       }
+      
     } catch (error) {
-      console.error('Checkout error:', error)
+      console.error('❌ Checkout error:', error)
       alert('Checkout failed. Please try again.')
     } finally {
       setIsCheckingOut(false)

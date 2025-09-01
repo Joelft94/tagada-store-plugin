@@ -1,3 +1,26 @@
+// Product and variant interfaces
+export interface ProductVariant {
+  id: string
+  name: string
+  description?: string
+  sku?: string
+  prices: ProductPrice[]
+  inventory?: {
+    quantity: number
+    available: boolean
+  }
+  attributes?: Record<string, string> // size, color, etc.
+}
+
+export interface ProductPrice {
+  id: string
+  amount: number
+  currency: string
+  originalAmount?: number
+  type: 'one-time' | 'recurring'
+  interval?: 'monthly' | 'yearly'
+}
+
 // Tagada-compatible cart item structure
 export interface CartItem {
   productId: string

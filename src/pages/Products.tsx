@@ -3,6 +3,7 @@ import { ArrowLeft, Star, ShoppingBag } from 'lucide-react'
 import { useCartContext } from '../contexts/CartProvider'
 import { useConfigProducts } from '../hooks/useConfigProducts'
 import { toast } from 'sonner'
+import { DebugInfo } from '../components/DebugInfo'
 
 // Interface for simplified product display
 interface DisplayProduct {
@@ -22,6 +23,14 @@ export function Products() {
   const { addItem } = useCartContext()
   const { products, loading, error } = useConfigProducts()
 
+  console.log('🛍️ Products Page Render:', {
+    products,
+    productsCount: products?.length,
+    loading,
+    error,
+    timestamp: new Date().toISOString()
+  })
+
   const handleAddToCart = (product: DisplayProduct, e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation to product page
     
@@ -29,6 +38,7 @@ export function Products() {
       // Get the first variant and price for simplicity
       const firstVariant = product.variants?.[0]
       const firstPrice = firstVariant?.prices?.[0]
+      const realPriceAmount = firstPrice?.currencyOptions?.USD?.amount
       
       addItem({
         productId: product.id,
@@ -36,14 +46,13 @@ export function Products() {
         priceId: firstPrice?.id || 'default',
         quantity: 1,
         name: product.name,
-        image: product.images[0] || '/images/placeholder.jpg',
-        price: firstPrice ? firstPrice.amount / 100 : product.price, // Convert cents to dollars
-        originalPrice: firstPrice?.originalAmount ? firstPrice.originalAmount / 100 : product.originalPrice,
+        image: product.images[0] || '/images/hero-products.jpg', // This now uses the variant image
+        price: realPriceAmount ? realPriceAmount / 100 : product.price, // Extract from currencyOptions
         category: product.category
       })
       
       toast.success(`Added ${product.name} to cart`, {
-        description: `$${(firstPrice ? firstPrice.amount / 100 : product.price).toFixed(2)}`
+        description: `$${(realPriceAmount ? realPriceAmount / 100 : product.price).toFixed(2)}`
       })
     } catch (error) {
       toast.error('Failed to add item to cart')
@@ -51,19 +60,42 @@ export function Products() {
     }
   }
 
-  // Convert Product type to DisplayProduct
-  const displayProducts: DisplayProduct[] = products.map(product => ({
-    id: product.id,
-    name: product.name,
-    category: product.category,
-    price: product.variants[0]?.prices[0] ? product.variants[0].prices[0].amount / 100 : 0,
-    originalPrice: product.variants[0]?.prices[0]?.originalAmount ? product.variants[0].prices[0].originalAmount / 100 : undefined,
-    rating: product.rating,
-    reviewCount: product.reviewCount,
-    images: product.images,
-    description: product.description,
-    variants: product.variants
-  }))
+  // Convert SDK Product type to DisplayProduct - extract real prices from currencyOptions
+  const displayProducts: DisplayProduct[] = products.map(product => {
+    // Handle price extraction from nested currencyOptions structure
+    const firstPrice = product.variants?.[0]?.prices?.[0]
+    const realPriceAmount = firstPrice?.currencyOptions?.USD?.amount
+    
+    // Debug pricing for the first product to see real data
+    if (product.id === products[0]?.id) {
+      console.log('🎯 REAL PRICE EXTRACTION for first product:', {
+        productName: product.name,
+        variants: product.variants?.length,
+        firstVariant: product.variants?.[0]?.name,
+        pricesCount: product.variants?.[0]?.prices?.length,
+        firstPrice: firstPrice,
+        directAmount: firstPrice?.amount,
+        currencyOptions: firstPrice?.currencyOptions,
+        realPriceAmount: realPriceAmount,
+        realPriceInDollars: realPriceAmount ? realPriceAmount / 100 : 'N/A'
+      })
+    }
+    
+    return {
+      id: product.id,
+      name: product.name,
+      category: 'general',
+      // Extract real price from currencyOptions.USD.amount
+      price: realPriceAmount ? realPriceAmount / 100 : 29.99,
+      originalPrice: undefined,
+      rating: undefined,
+      reviewCount: undefined,
+      // Extract image from first variant since that's where Tagada stores them
+      images: product.variants?.[0]?.imageUrl ? [product.variants[0].imageUrl] : ['/images/hero-products.jpg'],
+      description: product.description || 'Premium skincare product',
+      variants: product.variants
+    }
+  })
 
   if (loading) {
     return (
@@ -80,7 +112,7 @@ export function Products() {
     return (
       <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Error loading products: {error}</p>
+          <p className="text-red-600 mb-4">Error loading products: {error?.toString() || 'Unknown error'}</p>
           <Link to="/" className="text-primary hover:text-primary">
             ← Back to Home
           </Link>
@@ -106,6 +138,23 @@ export function Products() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Discover our complete range of skincare essentials, crafted with premium ingredients.
           </p>
+          
+          {/* Data Source Indicator */}
+          <div className="mt-6 flex justify-center">
+            {products.length > 0 && products[0].name.includes('[MOCK]') ? (
+              <div className="bg-orange-100 border border-orange-300 text-orange-800 px-4 py-2 rounded-full text-sm font-medium">
+                🔄 Currently showing MOCK data (SDK issue)
+              </div>
+            ) : products.length > 0 ? (
+              <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+                ✅ Showing REAL products from Tagada SDK
+              </div>
+            ) : (
+              <div className="bg-gray-100 border border-gray-300 text-gray-600 px-4 py-2 rounded-full text-sm font-medium">
+                🔍 Loading products...
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -212,6 +261,9 @@ export function Products() {
           </div>
         </div>
       </section>
+      
+      {/* Debug Panel - Enabled to check image data */}
+      {import.meta.env.DEV && <DebugInfo />}
     </div>
   )
 }

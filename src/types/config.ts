@@ -14,10 +14,8 @@ const BrandingSchema = z.object({
   logoUrl: z.string().optional(),
 });
 
-// Products configuration - simple productIds array
-const ProductsSchema = z.object({
-  productIds: z.array(z.string().min(1, "Product ID cannot be empty")),
-});
+// Product IDs configuration - as suggested by team
+const ProductIdsSchema = z.array(z.string().min(1, "Product ID cannot be empty"));
 
 // Multi-language content support
 const LocalizedStringSchema = z.record(z.string(), z.string()); // locale -> string
@@ -60,12 +58,12 @@ const SeoSchema = z
   })
   .optional();
 
-// Main configuration schema - exactly as per specifications
+// Main configuration schema - using product IDs as team suggested
 export const ConfigSchema = z.object({
   configName: z.string().min(1, "Config name is required"),
-  branding: BrandingSchema,
-  products: ProductsSchema,
-  content: ContentSchema,
+  productIds: ProductIdsSchema,
+  branding: BrandingSchema.optional(),
+  content: ContentSchema.optional(),
   assets: AssetsSchema,
   seo: SeoSchema,
 });
@@ -73,7 +71,7 @@ export const ConfigSchema = z.object({
 // Export types
 export type Config = z.infer<typeof ConfigSchema>;
 export type Branding = z.infer<typeof BrandingSchema>;
-export type Products = z.infer<typeof ProductsSchema>;
+export type ProductIds = z.infer<typeof ProductIdsSchema>;
 export type Content = z.infer<typeof ContentSchema>;
 export type LocalizedString = z.infer<typeof LocalizedStringSchema>;
 export type ContentSections = z.infer<typeof ContentSectionsSchema>;
@@ -128,40 +126,9 @@ export const getSectionContent = (
 // Default minimal configuration template
 export const DEFAULT_CONFIG: Config = {
   configName: "default-skincare",
-  branding: {
-    companyName: "Glow Essentials",
-    primaryColor: "#10B981",
-    secondaryColor: "#3B82F6",
-  },
-  products: {
-    productIds: [
-      "prod_vitamin_c_serum",
-      "prod_hyaluronic_moisturizer",
-      "prod_gentle_cleanser",
-    ],
-  },
-  content: {
-    tagline: {
-      en: "Beautiful skincare, simplified.",
-      es: "Cuidado de la piel hermoso, simplificado.",
-    },
-    sections: {
-      en: {
-        hero: "Transform Your Skin",
-        about: "Premium skincare products for radiant, healthy skin.",
-        guarantee: "30-day money-back guarantee",
-      },
-      es: {
-        hero: "Transforma tu Piel",
-        about:
-          "Productos premium para el cuidado de la piel radiante y saludable.",
-        guarantee: "Garantía de devolución de dinero de 30 días",
-      },
-    },
-    footerLinks: [
-      { label: "Privacy Policy", url: "/privacy" },
-      { label: "Terms of Service", url: "/terms" },
-      { label: "Contact Us", url: "/contact" },
-    ],
-  },
+  productIds: [
+    "product_example_1",
+    "product_example_2", 
+    "product_example_3",
+  ],
 };

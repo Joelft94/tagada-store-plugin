@@ -1,64 +1,94 @@
 import { useMemo } from 'react'
-import { useConfig } from './useConfig'
-import { useProducts } from './useProducts'
+import { useConfigContext } from '../contexts/ConfigProvider'
+import { useProducts, useTagadaContext } from '@tagadapay/plugin-sdk/react'
 
 /**
- * Hook that combines config-driven product selection with product data
- * This bridges the gap until we have real Tagada store integration
+ * Hook that uses SDK useProducts directly + config filtering
+ * No more wrapper - using the real SDK hook as team suggested!
  */
 export const useConfigProducts = () => {
-  const { config } = useConfig()
-  const { products: allProducts, loading, error, refetch } = useProducts()
+  const { config } = useConfigContext()
+  const tagadaContext = useTagadaContext()
+  
+  // Debug current store connection
+  console.log('🏪 Tagada Context Store Info:', {
+    store: tagadaContext.store,
+    storeId: tagadaContext.store?.id,
+    session: tagadaContext.session,
+    isInitialized: tagadaContext.isInitialized,
+    isSessionInitialized: tagadaContext.isSessionInitialized,
+    auth: tagadaContext.auth,
+    environment: tagadaContext.environment
+  })
+  
+  // Use the SDK useProducts hook directly as team said!
+  // Only enable when session is ready to avoid authentication errors
+  const { products: sdkProducts, isLoading, error, refetch } = useProducts({
+    enabled: tagadaContext.isSessionInitialized,
+    includeVariants: true,
+    includePrices: true,
+  })
 
-  // Extract product IDs from simplified config structure
-  const configProductIds = useMemo(() => {
-    // Get products from config.products.productIds array
-    if (config?.products?.productIds && config.products.productIds.length > 0) {
-      return config.products.productIds
+  console.log('🔍 useConfigProducts - Using SDK useProducts directly!')
+  console.log('🔍 Session initialized:', tagadaContext.isSessionInitialized)
+  console.log('🔍 Config productIds:', config?.productIds)
+  console.log('🔍 SDK products:', sdkProducts)
+  console.log('🔍 SDK products count:', sdkProducts?.length)
+  console.log('🔍 SDK loading:', isLoading)
+  console.log('🔍 SDK error:', error)
+
+  // Filter SDK products by config productIds
+  const filteredProducts = useMemo(() => {
+    if (!config?.productIds || config.productIds.length === 0) {
+      console.log('📋 No config productIds - returning all SDK products')
+      return sdkProducts || []
     }
 
-    // Fallback to mock product IDs if config doesn't specify any
-    return ['prod_vitamin_c_serum', 'prod_hyaluronic_moisturizer', 'prod_gentle_cleanser']
-  }, [config])
+    if (!sdkProducts || sdkProducts.length === 0) {
+      console.log('📋 No SDK products - store is empty, need to add products to Tagada store')
+      console.log('📋 Current config expects these product IDs:', config.productIds)
+      console.log('📋 But your Tagada store has 0 products')
+      return []
+    }
 
-  // Filter products based on config
-  const configProducts = useMemo(() => {
-    if (!allProducts.length) return []
-    
-    return allProducts.filter(product => 
-      configProductIds.includes(product.id)
+    const filtered = sdkProducts.filter(product => 
+      config.productIds.includes(product.id)
     )
-  }, [allProducts, configProductIds])
-
-  // Get featured products (first 3 products from config)
-  const featuredProducts = useMemo(() => {
-    if (!allProducts.length || !configProductIds.length) return []
     
-    // Take first 3 products as featured
-    const featuredIds = configProductIds.slice(0, 3)
-    return allProducts.filter(product => featuredIds.includes(product.id))
-  }, [allProducts, configProductIds])
+    console.log('📋 Filtered products by config:', filtered)
+    console.log(`📋 Found ${filtered.length} out of ${config.productIds.length} configured products`)
+    console.log('✅ CONFIG FILTERING RESTORED: Using real product IDs from store')
+    
+    return filtered
+  }, [sdkProducts, config?.productIds])
+
+  // Get featured products - SDK products don't have featured field, so return empty for now
+  const featuredProducts = useMemo(() => {
+    return [] // TODO: Need to determine how to mark products as featured
+  }, [filteredProducts])
 
   return {
-    products: configProducts,
+    products: filteredProducts,
     featuredProducts,
-    configProductIds,
-    loading,
+    configProductIds: config?.productIds || [],
+    loading: isLoading || !tagadaContext.isSessionInitialized, // Show loading until session ready
     error,
     refetch
   }
 }
 
 /**
- * Get products by category
+ * Get products by category from config-driven products
  */
 export const useConfigProductsByCategory = (categoryId: string) => {
-  const { products: allProducts, loading, error } = useProducts()
+  const { products: configProducts, loading, error } = useConfigProducts()
 
   const categoryProducts = useMemo(() => {
-    // Filter products by category
-    return allProducts.filter(product => product.category === categoryId)
-  }, [allProducts, categoryId])
+    // SDK products don't have category field, so return all for now
+    console.log(`⚠️ Category filtering not available - SDK products don't have category field`)
+    console.log(`⚠️ Requested category: ${categoryId}, returning all products`)
+    return configProducts // TODO: Need to determine how to categorize SDK products
+  }, [configProducts, categoryId])
 
   return {
     products: categoryProducts,
