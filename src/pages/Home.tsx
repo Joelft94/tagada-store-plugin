@@ -92,7 +92,7 @@ export function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/products" className="btn-primary group">
-                  SEE HYDRATING RANGE
+                  OUR PRODUCTS
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <button onClick={handleQuickAdd} className="btn-secondary">
@@ -182,7 +182,10 @@ export function Home() {
 
       {/* CTA Section */}
       <section className="py-12 bg-gradient-to-r from-primary-50 to-secondary-50 text-center">
-        <Link to="/products" className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group">
+        <Link
+          to="/products"
+          className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group"
+        >
           SHOP NOW
           <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
         </Link>

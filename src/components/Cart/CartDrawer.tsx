@@ -1,89 +1,85 @@
-import { useEffect, useState } from 'react'
-import { useCartContext } from '../../contexts/CartProvider'
-import { useCheckout } from '../../hooks/useCheckout'
-import { usePluginConfig } from '@tagadapay/plugin-sdk/react'
-import { X, Plus, Minus, ShoppingBag, Trash2, Loader } from 'lucide-react'
+import { useEffect, useState } from "react";
+import { useCartContext } from "../../contexts/CartProvider";
+import { useCheckout } from "../../hooks/useCheckout";
+import { X, Plus, Minus, ShoppingBag, Trash2, Loader } from "lucide-react";
 
 export function CartDrawer() {
-  const { 
-    isOpen, 
-    items, 
-    itemCount, 
-    subtotal, 
-    discount, 
+  const {
+    isOpen,
+    items,
+    itemCount,
+    subtotal,
+    discount,
     total,
     cartToken,
-    closeCart, 
-    updateQuantity, 
+    closeCart,
+    updateQuantity,
     removeItem,
-    clearCart
-  } = useCartContext()
-  
-  const { init } = useCheckout()
-  const { storeId } = usePluginConfig()
-  const [isCheckingOut, setIsCheckingOut] = useState(false)
+    clearCart,
+  } = useCartContext();
+
+  const {
+    initializeCheckout,
+    // isLoading: isCheckoutLoading, // Not used in UI currently
+    // error: checkoutError, // Not used in UI currently
+  } = useCheckout();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Prevent body scroll when cart is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
-  // Handle checkout with Tagada integration
+  // Handle checkout with new Tagada integration
   const handleCheckout = async () => {
-    if (items.length === 0) return
-    
-    setIsCheckingOut(true)
-    try {
-      // Convert cart items to Tagada line items format
-      const lineItems = items.map(item => ({
-        variantId: item.variantId,
-        priceId: item.priceId,
-        quantity: item.quantity
-      }))
-      
-      console.log('🚀 Initializing REAL Tagada checkout with:', {
-        storeId,
-        lineItems,
-        cartToken
-      })
-      
-      const result = await init({
-        storeId,
-        lineItems,
-        cartToken
-      })
-      
-      console.log('✅ REAL Tagada checkout session initialized:', result)
-      console.log('  - Checkout URL:', result?.checkoutUrl)
-      console.log('  - Session ID:', result?.checkoutSession?.id)
-      
-      // Redirect to checkout URL as per SPECIFICATIONS.md
-      if (result?.checkoutUrl) {
-        console.log('🔗 Redirecting to checkout URL:', result.checkoutUrl)
-        window.location.href = result.checkoutUrl
-        return
-      } else {
-        console.warn('⚠️ No checkout URL returned from Tagada init')
-        alert('Checkout session created but no redirect URL provided. Check console for details.')
-      }
-      
-    } catch (error) {
-      console.error('❌ Checkout error:', error)
-      alert('Checkout failed. Please try again.')
-    } finally {
-      setIsCheckingOut(false)
-    }
-  }
+    console.log("🛒 Checkout button clicked. Cart state:", {
+      itemsLength: items.length,
+      items: items,
+      cartToken: cartToken,
+      itemCount: itemCount,
+    });
 
-  if (!isOpen) return null
+    if (items.length === 0) {
+      console.warn("⚠️ Cart is empty when checkout button clicked");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      console.log("🛒 Starting checkout process with:", {
+        itemCount: items.length,
+        cartToken,
+        items: items.map((item) => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+          priceId: item.priceId,
+        })),
+      });
+
+      // Use the new checkout initialization hook
+      await initializeCheckout();
+      // Redirect happens automatically in initializeCheckout
+    } catch (error) {
+      console.error("❌ Checkout failed:", error);
+      alert(
+        `Checkout failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <>
@@ -93,14 +89,14 @@ export function CartDrawer() {
         onClick={closeCart}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => e.key === 'Escape' && closeCart()}
+        onKeyDown={(e) => e.key === "Escape" && closeCart()}
         aria-label="Close cart"
       />
 
       {/* Cart Panel */}
       <div
         className={`fixed top-0 right-0 h-full w-full md:w-96 lg:w-[28rem] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
         aria-labelledby="cart-title"
@@ -114,9 +110,14 @@ export function CartDrawer() {
                 <ShoppingBag className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 id="cart-title" className="text-xl font-light text-gray-800">Shopping Cart</h2>
+                <h2
+                  id="cart-title"
+                  className="text-xl font-light text-gray-800"
+                >
+                  Shopping Cart
+                </h2>
                 <p className="text-sm text-gray-600">
-                  {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                  {itemCount} {itemCount === 1 ? "item" : "items"}
                 </p>
               </div>
             </div>
@@ -136,8 +137,12 @@ export function CartDrawer() {
                 <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mb-4">
                   <ShoppingBag className="w-10 h-10 text-primary" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Your cart is empty</h3>
-                <p className="text-gray-600 mb-6">Add some products to get started</p>
+                <h3 className="text-lg font-medium text-gray-800 mb-2">
+                  Your cart is empty
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Add some products to get started
+                </p>
                 <button onClick={closeCart} className="btn-primary">
                   Continue Shopping
                 </button>
@@ -150,7 +155,10 @@ export function CartDrawer() {
                 </div>
 
                 {items.map((item) => (
-                  <div key={`${item.productId}-${item.variantId}`} className="cart-item-card group">
+                  <div
+                    key={`${item.productId}-${item.variantId}`}
+                    className="cart-item-card group"
+                  >
                     <div className="flex space-x-4">
                       {/* Product Image */}
                       <div className="relative w-20 h-20 bg-primary-50 rounded-xl overflow-hidden flex-shrink-0">
@@ -165,11 +173,17 @@ export function CartDrawer() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h3 className="font-medium text-gray-800 text-sm leading-tight">{item.name}</h3>
-                            <p className="text-xs text-gray-500 mt-1">Size: {item.variantId}</p>
+                            <h3 className="font-medium text-gray-800 text-sm leading-tight">
+                              {item.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Size: {item.variantId}
+                            </p>
                           </div>
                           <button
-                            onClick={() => removeItem(item.productId, item.variantId)}
+                            onClick={() =>
+                              removeItem(item.productId, item.variantId)
+                            }
                             className="w-8 h-8 rounded-full bg-gray-100 hover:bg-red-100 flex items-center justify-center transition-colors duration-200 opacity-0 group-hover:opacity-100"
                             aria-label={`Remove ${item.name} from cart`}
                           >
@@ -180,28 +194,43 @@ export function CartDrawer() {
                         {/* Price and Quantity */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <span className="font-medium text-primary">${item.price.toFixed(2)}</span>
-                            {item.originalPrice && item.originalPrice > item.price && (
-                              <span className="text-xs text-gray-400 line-through">
-                                ${item.originalPrice.toFixed(2)}
-                              </span>
-                            )}
+                            <span className="font-medium text-primary">
+                              ${item.price.toFixed(2)}
+                            </span>
+                            {item.originalPrice &&
+                              item.originalPrice > item.price && (
+                                <span className="text-xs text-gray-400 line-through">
+                                  ${item.originalPrice.toFixed(2)}
+                                </span>
+                              )}
                           </div>
 
                           {/* Quantity Controls */}
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() =>
-                                updateQuantity(item.productId, item.variantId, Math.max(0, item.quantity - 1))
+                                updateQuantity(
+                                  item.productId,
+                                  item.variantId,
+                                  Math.max(0, item.quantity - 1)
+                                )
                               }
                               className="w-8 h-8 rounded-full bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors duration-200"
                               aria-label="Decrease quantity"
                             >
                               <Minus className="w-4 h-4 text-primary" />
                             </button>
-                            <span className="w-8 text-center text-sm font-medium text-gray-800">{item.quantity}</span>
+                            <span className="w-8 text-center text-sm font-medium text-gray-800">
+                              {item.quantity}
+                            </span>
                             <button
-                              onClick={() => updateQuantity(item.productId, item.variantId, item.quantity + 1)}
+                              onClick={() =>
+                                updateQuantity(
+                                  item.productId,
+                                  item.variantId,
+                                  item.quantity + 1
+                                )
+                              }
                               className="w-8 h-8 rounded-full bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors duration-200"
                               aria-label="Increase quantity"
                             >
@@ -217,9 +246,12 @@ export function CartDrawer() {
                 {/* BOGO Info */}
                 {discount > 0 && (
                   <div className="bogo-banner p-4 rounded-2xl text-white">
-                    <h3 className="font-medium mb-1">BOGO Discount Applied! 🎉</h3>
+                    <h3 className="font-medium mb-1">
+                      BOGO Discount Applied! 🎉
+                    </h3>
                     <p className="text-sm text-white/90">
-                      You're saving ${discount.toFixed(2)} with our Buy 2 Get 1 FREE offer!
+                      You're saving ${discount.toFixed(2)} with our Buy 2 Get 1
+                      FREE offer!
                     </p>
                   </div>
                 )}
@@ -239,7 +271,9 @@ export function CartDrawer() {
                 {discount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-primary">BOGO Discount</span>
-                    <span className="text-primary">-${discount.toFixed(2)}</span>
+                    <span className="text-primary">
+                      -${discount.toFixed(2)}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between text-lg font-medium pt-2 border-t border-primary-200">
@@ -253,9 +287,9 @@ export function CartDrawer() {
                 <button
                   onClick={handleCheckout}
                   className="w-full btn-primary text-base py-4 flex items-center justify-center space-x-2"
-                  disabled={items.length === 0 || isCheckingOut}
+                  disabled={items.length === 0 || isProcessing}
                 >
-                  {isCheckingOut ? (
+                  {isProcessing ? (
                     <>
                       <Loader className="w-5 h-5 animate-spin" />
                       <span>Processing...</span>
@@ -264,12 +298,15 @@ export function CartDrawer() {
                     <span>Proceed to Checkout</span>
                   )}
                 </button>
-                
+
                 <div className="flex space-x-3">
-                  <button onClick={closeCart} className="flex-1 btn-secondary text-sm py-3">
+                  <button
+                    onClick={closeCart}
+                    className="flex-1 btn-secondary text-sm py-3"
+                  >
                     Continue Shopping
                   </button>
-                  <button 
+                  <button
                     onClick={clearCart}
                     className="px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-full transition-colors duration-200"
                   >
@@ -282,5 +319,5 @@ export function CartDrawer() {
         </div>
       </div>
     </>
-  )
+  );
 }
