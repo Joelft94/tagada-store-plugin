@@ -62,6 +62,13 @@ const FooterSectionSchema = z.object({
   links: z.array(FooterLinkSchema).min(1, "At least one link is required"),
 });
 
+// Navigation link configuration
+const NavLinkSchema = z.object({
+  label: z.string().min(1, "Navigation label is required"),
+  url: z.string().min(1, "Navigation URL is required"), 
+  external: z.boolean().optional(), // For external links vs internal routes
+});
+
 // Social media links configuration  
 const SocialLinkSchema = z.object({
   platform: z.string().min(1, "Platform name is required"), // Allow any platform name
@@ -77,6 +84,7 @@ const ContentSchema = z.object({
   footerLinks: z.array(FooterLinkSchema).optional(),
   socialLinks: z.array(SocialLinkSchema).optional(),
   footerSections: z.array(FooterSectionSchema).optional(), // Configurable footer sections
+  navigationLinks: z.array(NavLinkSchema).optional(), // Configurable navigation menu
 });
 
 // Assets configuration
@@ -117,6 +125,7 @@ export type LocalizedString = z.infer<typeof LocalizedStringSchema>;
 export type ContentSections = z.infer<typeof ContentSectionsSchema>;
 export type FooterLink = z.infer<typeof FooterLinkSchema>;
 export type FooterSection = z.infer<typeof FooterSectionSchema>;
+export type NavLink = z.infer<typeof NavLinkSchema>;
 export type SocialLink = z.infer<typeof SocialLinkSchema>;
 export type Assets = z.infer<typeof AssetsSchema>;
 export type Seo = z.infer<typeof SeoSchema>;

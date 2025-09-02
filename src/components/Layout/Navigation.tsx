@@ -54,28 +54,40 @@ export function Navigation() {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8 text-sm text-gray-600">
-            <Link
-              to="/"
-              className={`hover:text-primary transition-colors duration-300 relative group ${
-                location.pathname === '/' ? 'text-primary' : ''
-              }`}
-            >
-              HOME
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            <Link
-              to="/products"
-              className={`hover:text-primary transition-colors duration-300 relative group ${
-                location.pathname.startsWith('/products') ? 'text-primary' : ''
-              }`}
-            >
-              PRODUCTS
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            <a href="#contact" className="hover:text-primary transition-colors duration-300 relative group">
-              CONTACT
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
+            {config?.content?.navigationLinks?.map((navLink, index) => {
+              const isActive = navLink.external 
+                ? false 
+                : location.pathname === navLink.url || 
+                  (navLink.url !== '/' && location.pathname.startsWith(navLink.url));
+
+              if (navLink.external) {
+                return (
+                  <a
+                    key={index}
+                    href={navLink.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors duration-300 relative group"
+                  >
+                    {navLink.label.toUpperCase()}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                  </a>
+                );
+              }
+
+              return (
+                <Link
+                  key={index}
+                  to={navLink.url}
+                  className={`hover:text-primary transition-colors duration-300 relative group ${
+                    isActive ? 'text-primary' : ''
+                  }`}
+                >
+                  {navLink.label.toUpperCase()}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              );
+            })}
           </div>
 
           <div className="flex items-center space-x-4 text-sm text-gray-600">
@@ -105,23 +117,33 @@ export function Navigation() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-primary-100 bg-white/95 backdrop-blur-md">
             <div className="flex flex-col space-y-4 text-sm text-gray-600">
-              <Link
-                to="/"
-                className="hover:text-primary transition-colors duration-300 py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                HOME
-              </Link>
-              <Link
-                to="/products"
-                className="hover:text-primary transition-colors duration-300 py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                PRODUCTS
-              </Link>
-              <a href="#contact" className="hover:text-primary transition-colors duration-300 py-2">
-                CONTACT
-              </a>
+              {config?.content?.navigationLinks?.map((navLink, index) => {
+                if (navLink.external) {
+                  return (
+                    <a
+                      key={index}
+                      href={navLink.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-primary transition-colors duration-300 py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {navLink.label.toUpperCase()}
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={index}
+                    to={navLink.url}
+                    className="hover:text-primary transition-colors duration-300 py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {navLink.label.toUpperCase()}
+                  </Link>
+                );
+              })}
               <a href="#search" className="hover:text-primary transition-colors duration-300 py-2">
                 SEARCH
               </a>
