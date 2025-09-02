@@ -4,6 +4,9 @@ import { z } from "zod";
 // Branding configuration - exactly as per specifications
 const BrandingSchema = z.object({
   companyName: z.string().min(1, "Company name is required"),
+  logoText: z.string().optional(), // Text to show instead of "Olea"
+  logoSize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']).optional(), // Logo size preset
+  logoHeight: z.number().min(16).max(200).optional(), // Custom height in pixels
   primaryColor: z
     .string()
     .regex(/^#[0-9A-F]{6}$/i, "Must be a valid hex color"),
@@ -23,21 +26,57 @@ const LocalizedStringSchema = z.record(z.string(), z.string()); // locale -> str
 // Content sections for multi-language support
 const ContentSectionsSchema = z.record(
   z.string(),
-  z.record(z.string(), z.string())
-); // locale -> { sectionKey -> content }
+  z.object({
+    // Hero section texts
+    heroSubtitle: z.string().optional(),
+    heroTitle: z.string().optional(), 
+    heroDescription: z.string().optional(),
+    primaryButton: z.string().optional(),
+    secondaryButton: z.string().optional(),
+    trustText: z.string().optional(),
+    
+    // Features section texts
+    featuresTitle: z.string().optional(),
+    featuresSubtitle: z.string().optional(),
+    
+    // CTA section text
+    ctaButton: z.string().optional(),
+    
+    // Other existing content
+    hero: z.string().optional(),
+    about: z.string().optional(),
+    guarantee: z.string().optional(),
+  })
+); // locale -> { content fields }
 
-// Footer links configuration
+// Footer links configuration  
 const FooterLinkSchema = z.object({
   label: z.string().min(1, "Link label is required"),
   url: z.string().min(1, "Link URL is required"),
   locale: z.string().optional(),
 });
 
+// Footer section configuration
+const FooterSectionSchema = z.object({
+  title: z.string().min(1, "Section title is required"),
+  links: z.array(FooterLinkSchema).min(1, "At least one link is required"),
+});
+
+// Social media links configuration  
+const SocialLinkSchema = z.object({
+  platform: z.string().min(1, "Platform name is required"), // Allow any platform name
+  url: z.string().url("Must be a valid URL"),
+  label: z.string().optional(), // Optional label for accessibility
+  iconUrl: z.string().url("Must be a valid image URL"), // Required icon URL - only configured icons will show
+});
+
 // Content configuration with i18n support
 const ContentSchema = z.object({
   tagline: LocalizedStringSchema,
   sections: ContentSectionsSchema,
-  footerLinks: z.array(FooterLinkSchema),
+  footerLinks: z.array(FooterLinkSchema).optional(),
+  socialLinks: z.array(SocialLinkSchema).optional(),
+  footerSections: z.array(FooterSectionSchema).optional(), // Configurable footer sections
 });
 
 // Assets configuration
@@ -62,6 +101,7 @@ const SeoSchema = z
 export const ConfigSchema = z.object({
   configName: z.string().min(1, "Config name is required"),
   productIds: ProductIdsSchema,
+  heroProductId: z.string().optional(), // Optional hero product ID for home section
   branding: BrandingSchema.optional(),
   content: ContentSchema.optional(),
   assets: AssetsSchema,
@@ -76,6 +116,8 @@ export type Content = z.infer<typeof ContentSchema>;
 export type LocalizedString = z.infer<typeof LocalizedStringSchema>;
 export type ContentSections = z.infer<typeof ContentSectionsSchema>;
 export type FooterLink = z.infer<typeof FooterLinkSchema>;
+export type FooterSection = z.infer<typeof FooterSectionSchema>;
+export type SocialLink = z.infer<typeof SocialLinkSchema>;
 export type Assets = z.infer<typeof AssetsSchema>;
 export type Seo = z.infer<typeof SeoSchema>;
 
@@ -116,11 +158,24 @@ export const getSectionContent = (
   locale: string = "en",
   fallbackLocale: string = "en"
 ): string => {
-  const localeSection = sections[locale]?.[sectionKey];
-  const fallbackSection = sections[fallbackLocale]?.[sectionKey];
-  const firstAvailable = Object.values(sections)[0]?.[sectionKey];
+  const localeSection = sections[locale] as any;
+  const fallbackSection = sections[fallbackLocale] as any;
+  const firstAvailable = Object.values(sections)[0] as any;
 
-  return localeSection || fallbackSection || firstAvailable || "";
+  return localeSection?.[sectionKey] || fallbackSection?.[sectionKey] || firstAvailable?.[sectionKey] || "";
+};
+
+// Helper to get content sections for a specific locale
+export const getContentForLocale = (
+  sections: ContentSections,
+  locale: string = "en",
+  fallbackLocale: string = "en"
+) => {
+  const localeContent = sections[locale];
+  const fallbackContent = sections[fallbackLocale];
+  const firstAvailable = Object.values(sections)[0];
+
+  return localeContent || fallbackContent || firstAvailable || {};
 };
 
 // Default minimal configuration template

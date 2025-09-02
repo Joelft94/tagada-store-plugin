@@ -2,11 +2,31 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, ShoppingBag } from 'lucide-react'
 import { useCartContext } from '../../contexts/CartProvider'
+import { useConfigContext } from '../../contexts/ConfigProvider'
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
   const { itemCount, toggleCart } = useCartContext()
+  const { config } = useConfigContext()
+
+  // Calculate logo size based on config
+  const getLogoHeight = () => {
+    if (config?.branding?.logoHeight) {
+      return config.branding.logoHeight;
+    }
+    
+    switch (config?.branding?.logoSize) {
+      case 'xs': return 20;
+      case 'sm': return 24;
+      case 'md': return 32;
+      case 'lg': return 40;
+      case 'xl': return 48;
+      default: return 32; // Default medium size
+    }
+  };
+
+  const logoHeight = getLogoHeight();
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-primary-100 transition-all duration-300">
@@ -14,9 +34,23 @@ export function Navigation() {
         <div className="flex items-center justify-between py-4">
           <Link
             to="/"
-            className="text-2xl font-light text-gray-800 hover:text-primary transition-colors duration-300"
+            className="flex items-center space-x-2 text-2xl font-light text-gray-800 hover:text-primary transition-colors duration-300"
           >
-            Olea
+            {config?.branding?.logoUrl ? (
+              <img 
+                src={config.branding.logoUrl} 
+                alt={config.branding.logoText || config.branding.companyName || "Logo"}
+                className="w-auto"
+                style={{ height: `${logoHeight}px` }}
+              />
+            ) : (
+              <span 
+                className="font-light text-gray-800"
+                style={{ fontSize: `${Math.max(logoHeight * 0.75, 16)}px` }}
+              >
+                {config?.branding?.logoText || config?.branding?.companyName || "Olea"}
+              </span>
+            )}
           </Link>
 
           <div className="hidden md:flex items-center space-x-8 text-sm text-gray-600">

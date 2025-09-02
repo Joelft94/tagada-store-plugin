@@ -12,15 +12,21 @@ import {
 } from "lucide-react";
 import { useCartContext } from "../contexts/CartProvider";
 import { useConfigProducts } from "../hooks/useConfigProducts";
+import { useConfigContext } from "../contexts/ConfigProvider";
+import { getContentForLocale, getLocalizedContent } from "../types/config";
+import { SocialLinks } from "../components/SocialLinks";
 
 export function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const { addItem, openCart } = useCartContext();
   const { products, loading } = useConfigProducts();
+  const { config } = useConfigContext();
 
-  // Get the first product for the hero section
-  const firstProduct = products?.[0];
+  // Get the hero product - use configured heroProductId or fallback to first product
+  const heroProduct = config?.heroProductId 
+    ? products?.find(product => product.id === config.heroProductId)
+    : products?.[0];
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -30,21 +36,21 @@ export function Home() {
   }, []);
 
   const handleQuickAdd = () => {
-    if (!firstProduct) {
-      console.warn("No products available for quick add");
+    if (!heroProduct) {
+      console.warn("No hero product available for quick add");
       return;
     }
 
     // Get the first variant and price for the real product
-    const firstVariant = firstProduct.variants?.[0];
+    const firstVariant = heroProduct.variants?.[0];
     const firstPrice = firstVariant?.prices?.[0];
     const realPriceAmount = firstPrice?.currencyOptions?.USD?.amount;
 
     addItem({
-      productId: firstProduct.id,
+      productId: heroProduct.id,
       variantId: firstVariant?.id || "default",
       priceId: firstPrice?.id || "default",
-      name: firstProduct.name,
+      name: heroProduct.name,
       price: realPriceAmount ? realPriceAmount / 100 : 29.99, // Convert from cents to dollars
       image: firstVariant?.imageUrl || "/images/hero-products.jpg",
       category: "skincare",
@@ -52,9 +58,16 @@ export function Home() {
     openCart();
   };
 
-  // Get the hero image from the first product or fallback
-  const heroImage =
-    firstProduct?.variants?.[0]?.imageUrl || "/images/hero-products.jpg";
+  // Get the hero image with priority: assets.heroImage > heroProduct image > fallback
+  const heroImage = 
+    config?.assets?.heroImage ||
+    heroProduct?.variants?.[0]?.imageUrl || 
+    "/images/hero-products.jpg";
+
+  // Get localized content
+  const locale = "en"; // TODO: Add locale detection/selection
+  const content = config?.content?.sections ? getContentForLocale(config.content.sections, locale) : {};
+  const tagline = config?.content?.tagline ? getLocalizedContent(config.content.tagline, locale) : "Celebrating Australian Nature";
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -82,57 +95,91 @@ export function Home() {
             >
               <div className="space-y-6">
                 <p className="text-primary text-sm uppercase tracking-wider font-medium">
-                  Premium Australian Skincare
+                  {content.heroSubtitle || "Premium Australian Skincare"}
                 </p>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-800 leading-tight">
-                  Celebrating
-                  <br />
-                  <span className="text-primary relative">
-                    Australian Nature
-                    <svg
-                      className="absolute -bottom-2 left-0 w-full h-3"
-                      viewBox="0 0 300 12"
-                      fill="none"
-                    >
-                      <path
-                        d="M0 6C50 2 100 10 150 6C200 2 250 10 300 6"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="animate-draw"
-                      />
-                    </svg>
-                  </span>
+                  {content.heroTitle ? (
+                    content.heroTitle.split('\n').map((line, index) => (
+                      <span key={index}>
+                        {index === content.heroTitle!.split('\n').length - 1 ? (
+                          <span className="text-primary relative">
+                            {line}
+                            <svg
+                              className="absolute -bottom-2 left-0 w-full h-3"
+                              viewBox="0 0 300 12"
+                              fill="none"
+                            >
+                              <path
+                                d="M0 6C50 2 100 10 150 6C200 2 250 10 300 6"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className="animate-draw"
+                              />
+                            </svg>
+                          </span>
+                        ) : (
+                          line
+                        )}
+                        {index < content.heroTitle!.split('\n').length - 1 && <br />}
+                      </span>
+                    ))
+                  ) : (
+                    <>
+                      {tagline.split(' ').slice(0, -2).join(' ')}
+                      <br />
+                      <span className="text-primary relative">
+                        {tagline.split(' ').slice(-2).join(' ')}
+                        <svg
+                          className="absolute -bottom-2 left-0 w-full h-3"
+                          viewBox="0 0 300 12"
+                          fill="none"
+                        >
+                          <path
+                            d="M0 6C50 2 100 10 150 6C200 2 250 10 300 6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="animate-draw"
+                          />
+                        </svg>
+                      </span>
+                    </>
+                  )}
                 </h1>
               </div>
               <p className="text-gray-600 text-lg leading-relaxed max-w-md">
-                Discover our range of premium skincare products crafted with
-                native Australian botanicals for radiant, healthy skin.
+                {content.heroDescription || "Discover our range of premium skincare products crafted with native Australian botanicals for radiant, healthy skin."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/products" className="btn-primary group">
-                  OUR PRODUCTS
+                  {content.primaryButton || "OUR PRODUCTS"}
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <button
                   onClick={handleQuickAdd}
                   className="btn-secondary"
-                  disabled={loading || !firstProduct}
+                  disabled={loading || !heroProduct}
                 >
-                  {loading ? "LOADING..." : "TRY SAMPLE"}
+                  {loading ? "LOADING..." : (content.secondaryButton || "TRY SAMPLE")}
                 </button>
               </div>
-              <div className="flex items-center space-x-6 pt-4">
-                <div className="flex items-center space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-primary text-primary"
-                    />
-                  ))}
+              <div className="flex items-center justify-between pt-4">
+                <div className="flex items-center space-x-6">
+                  <div className="flex items-center space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-primary text-primary"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {content.trustText || "Trusted by 10,000+ customers"}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600">
-                  Trusted by 10,000+ customers
-                </p>
+                <SocialLinks 
+                  socialLinks={config?.content?.socialLinks} 
+                  className="hidden sm:flex"
+                />
               </div>
             </div>
 
@@ -148,8 +195,10 @@ export function Home() {
                   <img
                     src={heroImage}
                     alt={
-                      firstProduct
-                        ? `${firstProduct.name} - Premium skincare product`
+                      config?.assets?.heroImage
+                        ? "Premium skincare hero image"
+                        : heroProduct
+                        ? `${heroProduct.name} - Premium skincare product`
                         : "Premium skincare products with pink flowers and facial tools"
                     }
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -174,11 +223,10 @@ export function Home() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="section-title">
-              Natural skincare with scientifically proven results
+              {content.featuresTitle || "Natural skincare with scientifically proven results"}
             </h2>
             <p className="section-subtitle">
-              Harness the power of Australian botanicals with our carefully
-              formulated products.
+              {content.featuresSubtitle || "Harness the power of Australian botanicals with our carefully formulated products."}
             </p>
           </div>
 
@@ -212,7 +260,7 @@ export function Home() {
           to="/products"
           className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group"
         >
-          SHOP NOW
+          {content.ctaButton || "SHOP NOW"}
           <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
         </Link>
       </section>
