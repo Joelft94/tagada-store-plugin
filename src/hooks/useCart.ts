@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import type { CartItem, CartHookReturn } from "../types/cart";
 
 const CART_STORAGE_KEY = "tagada-skincare-cart";
@@ -6,12 +7,7 @@ const CART_TOKEN_KEY = "tagada-skincare-cart-token";
 
 // Generate a stable UUID for cartToken
 const generateCartToken = (): string => {
-  return (
-    "cart_" +
-    Math.random().toString(36).substr(2, 9) +
-    "_" +
-    Date.now().toString(36)
-  );
+  return `cart_${uuidv4()}`;
 };
 
 // BOGO discount logic - Buy 2 get 1 free on same category
