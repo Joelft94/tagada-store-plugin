@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import type { CartItem, CartHookReturn } from "../types/cart";
+import type { Config } from "../types/config";
 
 const CART_STORAGE_KEY = "tagada-skincare-cart";
 const CART_TOKEN_KEY = "tagada-skincare-cart-token";
@@ -11,7 +12,11 @@ const generateCartToken = (): string => {
 };
 
 // BOGO discount logic - Buy 2 get 1 free on same category
-const calculateDiscount = (items: CartItem[]): number => {
+const calculateDiscount = (items: CartItem[], enableBogo: boolean = true): number => {
+  // If BOGO is disabled, return 0 discount
+  if (!enableBogo) {
+    return 0;
+  }
   const categoryGroups = items.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
@@ -43,12 +48,12 @@ const calculateDiscount = (items: CartItem[]): number => {
   return totalDiscount;
 };
 
-const calculateTotals = (items: CartItem[]) => {
+const calculateTotals = (items: CartItem[], enableBogo: boolean = true) => {
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const discount = calculateDiscount(items);
+  const discount = calculateDiscount(items, enableBogo);
   const total = subtotal - discount;
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -104,7 +109,7 @@ const resetCartToken = (): string => {
   return newToken;
 };
 
-export const useCart = (): CartHookReturn => {
+export const useCart = (config?: Config | null): CartHookReturn => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [cartToken, setCartToken] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
@@ -138,8 +143,9 @@ export const useCart = (): CartHookReturn => {
     saveCartToStorage(items);
   }, [items, isInitialized]);
 
-  // Calculate totals
-  const { subtotal, discount, total, itemCount } = calculateTotals(items);
+  // Calculate totals with BOGO config consideration
+  const enableBogo = config?.content?.enableBogo !== false; // Default true, explicitly false to disable
+  const { subtotal, discount, total, itemCount } = calculateTotals(items, enableBogo);
 
   const addItem = useCallback(
     (newItem: Omit<CartItem, "quantity"> & { quantity?: number }) => {

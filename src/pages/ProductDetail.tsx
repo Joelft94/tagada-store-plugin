@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Star, Heart, Share2, Plus, Minus, ShoppingBag, Gift } from 'lucide-react'
 import { useCartContext } from '../contexts/CartProvider'
 import { useConfigProducts } from '../hooks/useConfigProducts'
+import { useConfigContext } from '../contexts/ConfigProvider'
 // Using SDK types but defining ProductVariant locally to avoid import issues
 interface ProductVariant {
   id: string
@@ -31,6 +32,7 @@ export function ProductDetail() {
   const { productId } = useParams<{ productId: string }>()
   const { addItem } = useCartContext()
   const { products, loading, error } = useConfigProducts()
+  const { config } = useConfigContext()
   
   // Find the product by ID
   const product = products.find(p => p.id === productId)
@@ -198,18 +200,20 @@ export function ProductDetail() {
               </div>
             </div>
 
-            {/* BOGO Offer Banner */}
-            <div className="bogo-banner p-6 rounded-2xl text-white relative overflow-hidden">
-              <div className="absolute top-2 right-2">
-                <Gift className="w-8 h-8 text-white/30" />
+            {/* BOGO Offer Banner - Only show if enabled in config */}
+            {(config?.content?.enableBogo !== false) && (
+              <div className="bogo-banner p-6 rounded-2xl text-white relative overflow-hidden">
+                <div className="absolute top-2 right-2">
+                  <Gift className="w-8 h-8 text-white/30" />
+                </div>
+                <div className="relative z-10">
+                  <h3 className="text-lg font-medium mb-2">Special Offer: Buy 2, Get 1 FREE!</h3>
+                  <p className="text-sm text-white/90">
+                    Mix and match any products from the same category. Discount automatically applied at checkout.
+                  </p>
+                </div>
               </div>
-              <div className="relative z-10">
-                <h3 className="text-lg font-medium mb-2">Special Offer: Buy 2, Get 1 FREE!</h3>
-                <p className="text-sm text-white/90">
-                  Mix and match any products from the same category. Discount automatically applied at checkout.
-                </p>
-              </div>
-            </div>
+            )}
 
             {/* Variant Selection */}
             <div className="space-y-4">

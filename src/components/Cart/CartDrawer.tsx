@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCartContext } from "../../contexts/CartProvider";
+import { useConfigContext } from "../../contexts/ConfigProvider";
 import { useCheckout } from "../../hooks/useCheckout";
 import { X, Plus, Minus, ShoppingBag, Trash2, Loader } from "lucide-react";
 
@@ -17,6 +18,7 @@ export function CartDrawer() {
     removeItem,
     clearCart,
   } = useCartContext();
+  const { config } = useConfigContext();
 
   const {
     initializeCheckout,
@@ -243,8 +245,8 @@ export function CartDrawer() {
                   </div>
                 ))}
 
-                {/* BOGO Info */}
-                {discount > 0 && (
+                {/* BOGO Info - Only show if enabled in config */}
+                {(config?.content?.enableBogo !== false) && discount > 0 && (
                   <div className="bogo-banner p-4 rounded-2xl text-white">
                     <h3 className="font-medium mb-1">
                       BOGO Discount Applied! 🎉
@@ -268,7 +270,7 @@ export function CartDrawer() {
                   <span className="text-gray-600">Subtotal</span>
                   <span className="text-gray-800">${subtotal.toFixed(2)}</span>
                 </div>
-                {discount > 0 && (
+                {(config?.content?.enableBogo !== false) && discount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-primary">BOGO Discount</span>
                     <span className="text-primary">

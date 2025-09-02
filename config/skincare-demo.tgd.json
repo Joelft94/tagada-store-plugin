@@ -27,7 +27,7 @@
         "heroTitle": "Unlock Your\nNatural Radiance",
         "heroDescription": "Discover our range of premium skincare products crafted with native Australian botanicals for radiant, healthy skin.",
         "primaryButton": "SHOP NOW",
-        "secondaryButton": "TRY SAMPLE", 
+        "secondaryButton": "TRY SAMPLE",
         "trustText": "Trusted by 10,000+ happy customers",
         "featuresTitle": "Natural skincare with scientifically proven results",
         "featuresSubtitle": "Harness the power of Australian botanicals with our carefully formulated products.",
@@ -59,7 +59,7 @@
         "iconUrl": "https://cdn-icons-png.flaticon.com/512/174/174855.png"
       },
       {
-        "platform": "facebook", 
+        "platform": "facebook",
         "url": "https://facebook.com/pureglowskincare",
         "label": "Like us on Facebook",
         "iconUrl": "https://cdn-icons-png.flaticon.com/512/174/174848.png"
@@ -72,7 +72,7 @@
       },
       {
         "platform": "discord",
-        "url": "https://discord.gg/pureglowskincare", 
+        "url": "https://discord.gg/pureglowskincare",
         "label": "Join our Discord community",
         "iconUrl": "https://cdn-icons-png.flaticon.com/512/5968/5968756.png"
       },
@@ -102,11 +102,35 @@
         "external": true
       }
     ],
+    "features": [
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/1828/1828506.png",
+        "title": "NATURAL\nINGREDIENTS",
+        "delay": "0ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/1205/1205546.png",
+        "title": "CRUELTY\nFREE",
+        "delay": "150ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/2912/2912515.png",
+        "title": "DERMATOLOGIST\nTESTED",
+        "delay": "300ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/833/833472.png",
+        "title": "HANDCRAFTED\nWITH LOVE",
+        "delay": "450ms"
+      }
+    ],
     "ctaButton": {
       "text": "EXPLORE COLLECTION",
       "url": "/products",
       "external": false
     },
+    "footerCopyright": "© 2025 Pure Glow Skincare. Transform your skin with Australian botanicals.",
+    "enableBogo": false,
     "footerSections": [
       {
         "title": "Products",

@@ -53,7 +53,9 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center">
-          <p className="text-gray-400 text-sm">© 2024 {config?.branding?.companyName || "Olea"}. All rights reserved. Made with ❤️ in Australia.</p>
+          <p className="text-gray-400 text-sm">
+            {config?.content?.footerCopyright || `© 2024 ${config?.branding?.companyName || "Olea"}. All rights reserved. Made with ❤️ in Australia.`}
+          </p>
         </div>
       </div>
     </footer>

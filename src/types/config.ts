@@ -101,6 +101,8 @@ const ContentSchema = z.object({
   navigationLinks: z.array(NavLinkSchema).optional(), // Configurable navigation menu
   features: z.array(FeatureItemSchema).optional(), // Configurable features section
   ctaButton: CtaButtonSchema.optional(), // Configurable CTA button
+  footerCopyright: z.string().optional(), // Footer copyright message
+  enableBogo: z.boolean().optional(), // Enable/disable BOGO promotions across the site
 });
 
 // Assets configuration

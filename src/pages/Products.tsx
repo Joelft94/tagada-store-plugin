@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, Star, ShoppingBag } from 'lucide-react'
 import { useCartContext } from '../contexts/CartProvider'
 import { useConfigProducts } from '../hooks/useConfigProducts'
+import { useConfigContext } from '../contexts/ConfigProvider'
 import { toast } from 'sonner'
 import { DebugInfo } from '../components/DebugInfo'
 
@@ -22,6 +23,7 @@ interface DisplayProduct {
 export function Products() {
   const { addItem } = useCartContext()
   const { products, loading, error } = useConfigProducts()
+  const { config } = useConfigContext()
 
   console.log('🛍️ Products Page Render:', {
     products,
@@ -244,23 +246,25 @@ export function Products() {
         )}
       </div>
 
-      {/* BOGO Banner */}
-      <section className="py-16 bogo-banner">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <h2 className="text-3xl md:text-4xl font-light text-white mb-4">Special Offer</h2>
-            <p className="text-white/90 text-lg mb-6">
-              Buy 2, Get 1 FREE! Mix and match any products from the same category. 
-              Discount automatically applied at checkout.
-            </p>
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-white">
-              <p className="text-sm">
-                ✨ Perfect time to try our complete skincare routine
+      {/* BOGO Banner - Only show if enabled in config */}
+      {(config?.content?.enableBogo !== false) && (
+        <section className="py-16 bogo-banner">
+          <div className="container mx-auto px-6 text-center">
+            <div className="max-w-2xl mx-auto space-y-6">
+              <h2 className="text-3xl md:text-4xl font-light text-white mb-4">Special Offer</h2>
+              <p className="text-white/90 text-lg mb-6">
+                Buy 2, Get 1 FREE! Mix and match any products from the same category. 
+                Discount automatically applied at checkout.
               </p>
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-white">
+                <p className="text-sm">
+                  ✨ Perfect time to try our complete skincare routine
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
       
       {/* Debug Panel - Enabled to check image data */}
       {import.meta.env.DEV && <DebugInfo />}

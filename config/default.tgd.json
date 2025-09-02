@@ -163,6 +163,8 @@
       "url": "/products",
       "external": false
     },
+    "footerCopyright": "© 2024 Pure Glow Skincare. All rights reserved. Made with ❤️ in Australia.",
+    "enableBogo": true,
     "footerSections": [
       {
         "title": "Shop",
