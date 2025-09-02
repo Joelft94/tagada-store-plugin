@@ -69,6 +69,20 @@ const NavLinkSchema = z.object({
   external: z.boolean().optional(), // For external links vs internal routes
 });
 
+// Feature item configuration
+const FeatureItemSchema = z.object({
+  iconUrl: z.string().url("Must be a valid icon URL"),
+  title: z.string().min(1, "Feature title is required"),
+  delay: z.string().optional(), // Animation delay (e.g., "100ms")
+});
+
+// CTA Button configuration
+const CtaButtonSchema = z.object({
+  text: z.string().min(1, "CTA button text is required"),
+  url: z.string().min(1, "CTA button URL is required"),
+  external: z.boolean().optional(), // For external links vs internal routes
+});
+
 // Social media links configuration  
 const SocialLinkSchema = z.object({
   platform: z.string().min(1, "Platform name is required"), // Allow any platform name
@@ -85,6 +99,8 @@ const ContentSchema = z.object({
   socialLinks: z.array(SocialLinkSchema).optional(),
   footerSections: z.array(FooterSectionSchema).optional(), // Configurable footer sections
   navigationLinks: z.array(NavLinkSchema).optional(), // Configurable navigation menu
+  features: z.array(FeatureItemSchema).optional(), // Configurable features section
+  ctaButton: CtaButtonSchema.optional(), // Configurable CTA button
 });
 
 // Assets configuration
@@ -126,6 +142,8 @@ export type ContentSections = z.infer<typeof ContentSectionsSchema>;
 export type FooterLink = z.infer<typeof FooterLinkSchema>;
 export type FooterSection = z.infer<typeof FooterSectionSchema>;
 export type NavLink = z.infer<typeof NavLinkSchema>;
+export type FeatureItem = z.infer<typeof FeatureItemSchema>;
+export type CtaButton = z.infer<typeof CtaButtonSchema>;
 export type SocialLink = z.infer<typeof SocialLinkSchema>;
 export type Assets = z.infer<typeof AssetsSchema>;
 export type Seo = z.infer<typeof SeoSchema>;

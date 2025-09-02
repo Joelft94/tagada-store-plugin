@@ -83,6 +83,30 @@
         "iconUrl": "https://cdn-icons-png.flaticon.com/512/174/174879.png"
       }
     ],
+    "navigationLinks": [
+      {
+        "label": "Home",
+        "url": "/"
+      },
+      {
+        "label": "Shop",
+        "url": "/products"
+      },
+      {
+        "label": "Skincare Guide",
+        "url": "/skincare-guide"
+      },
+      {
+        "label": "Community",
+        "url": "https://discord.gg/pureglowskincare",
+        "external": true
+      }
+    ],
+    "ctaButton": {
+      "text": "EXPLORE COLLECTION",
+      "url": "/products",
+      "external": false
+    },
     "footerSections": [
       {
         "title": "Products",

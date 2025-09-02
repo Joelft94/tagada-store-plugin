@@ -104,6 +104,65 @@
         "iconUrl": "https://cdn-icons-png.flaticon.com/512/174/174879.png"
       }
     ],
+    "navigationLinks": [
+      {
+        "label": "Home",
+        "url": "/"
+      },
+      {
+        "label": "Products",
+        "url": "/products"
+      },
+      {
+        "label": "About",
+        "url": "/about"
+      },
+      {
+        "label": "Blog",
+        "url": "/blog"
+      },
+      {
+        "label": "Contact",
+        "url": "/contact"
+      }
+    ],
+    "features": [
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/1828/1828506.png",
+        "title": "NO NASTY\nCHEMICALS",
+        "delay": "0ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/628/628283.png",
+        "title": "VEGAN\nINGREDIENTS",
+        "delay": "100ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/1205/1205546.png",
+        "title": "CRUELTY\nFREE",
+        "delay": "200ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/3003/3003543.png",
+        "title": "FAST\nDELIVERY",
+        "delay": "300ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/2912/2912515.png",
+        "title": "CLINICALLY\nTESTED",
+        "delay": "400ms"
+      },
+      {
+        "iconUrl": "https://cdn-icons-png.flaticon.com/512/833/833472.png",
+        "title": "MADE WITH\nLOVE",
+        "delay": "500ms"
+      }
+    ],
+    "ctaButton": {
+      "text": "SHOP NOW",
+      "url": "/products",
+      "external": false
+    },
     "footerSections": [
       {
         "title": "Shop",

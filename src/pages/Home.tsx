@@ -231,38 +231,81 @@ export function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8">
-            {[
-              { icon: Shield, title: "NO NASTY\nCHEMICALS", delay: "0ms" },
-              { icon: Leaf, title: "VEGAN\nINGREDIENTS", delay: "100ms" },
-              { icon: Droplets, title: "CRUELTY\nFREE", delay: "200ms" },
-              { icon: Clock, title: "FAST\nDELIVERY", delay: "300ms" },
-              { icon: Sparkles, title: "CLINICALLY\nTESTED", delay: "400ms" },
-              { icon: Heart, title: "MADE WITH\nLOVE", delay: "500ms" },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="feature-card group"
-                style={{ animationDelay: feature.delay }}
-              >
-                <div className="icon-container">
-                  <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+            {config?.content?.features ? (
+              // Use configured features with image icons
+              config.content.features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="feature-card group"
+                  style={{ animationDelay: feature.delay || `${index * 100}ms` }}
+                >
+                  <div className="icon-container">
+                    <img 
+                      src={feature.iconUrl} 
+                      alt={`${feature.title.replace('\n', ' ')} icon`}
+                      className="w-6 h-6 md:w-8 md:h-8 object-contain group-hover:scale-110 transition-transform duration-300" 
+                    />
+                  </div>
+                  <p className="feature-text">{feature.title}</p>
                 </div>
-                <p className="feature-text">{feature.title}</p>
-              </div>
-            ))}
+              ))
+            ) : (
+              // Use fallback Lucide React icons
+              [
+                { icon: Shield, title: "NO NASTY\nCHEMICALS", delay: "0ms" },
+                { icon: Leaf, title: "VEGAN\nINGREDIENTS", delay: "100ms" },
+                { icon: Droplets, title: "CRUELTY\nFREE", delay: "200ms" },
+                { icon: Clock, title: "FAST\nDELIVERY", delay: "300ms" },
+                { icon: Sparkles, title: "CLINICALLY\nTESTED", delay: "400ms" },
+                { icon: Heart, title: "MADE WITH\nLOVE", delay: "500ms" },
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className="feature-card group"
+                  style={{ animationDelay: feature.delay }}
+                >
+                  <div className="icon-container">
+                    <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <p className="feature-text">{feature.title}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-12 bg-gradient-to-r from-primary-50 to-secondary-50 text-center">
-        <Link
-          to="/products"
-          className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group"
-        >
-          {content.ctaButton || "SHOP NOW"}
-          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
-        </Link>
+        {config?.content?.ctaButton ? (
+          config.content.ctaButton.external ? (
+            <a
+              href={config.content.ctaButton.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group"
+            >
+              {config.content.ctaButton.text}
+              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
+            </a>
+          ) : (
+            <Link
+              to={config.content.ctaButton.url}
+              className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group"
+            >
+              {config.content.ctaButton.text}
+              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
+            </Link>
+          )
+        ) : (
+          <Link
+            to="/products"
+            className="inline-flex items-center bg-primary hover:bg-primary-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-colors duration-200 group"
+          >
+            {content.ctaButton || "SHOP NOW"}
+            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
+          </Link>
+        )}
       </section>
     </div>
   );
