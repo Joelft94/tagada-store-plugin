@@ -2,7 +2,6 @@ import { useCheckout as useTagadaCheckout } from "@tagadapay/plugin-sdk/react";
 import { useCartContext } from "../contexts/CartProvider";
 import { usePluginConfig } from "@tagadapay/plugin-sdk/react";
 
-// MINIMAL implementation following SPECIFICATIONS.md exactly
 export function useCheckout() {
   const { items, cartToken } = useCartContext();
   const { storeId } = usePluginConfig();

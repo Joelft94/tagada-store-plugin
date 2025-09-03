@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { usePluginConfig } from '@tagadapay/plugin-sdk/react'
 import { useConfig } from '../hooks/useConfig'
 import type { Config } from '../types/config'
-import { getLocalizedContent, getSectionContent } from '../types/config'
+import { getLocalizedContent, getSectionContent, validateConfig } from '../types/config'
 
 interface ConfigContextValue {
   config: Config | null
@@ -25,12 +26,49 @@ interface ConfigProviderProps {
   locale?: string
 }
 
+/**
+ * ConfigProvider supports both development and production environments:
+ * 
+ * - **Development**: Uses local config files from /config/*.tgd.json via useConfig hook
+ * - **Production**: Uses Tagada SDK config injection via usePluginConfig hook
+ * 
+ * The provider automatically detects which environment it's running in and
+ * uses the appropriate config source. This ensures seamless operation both
+ * during local development and when deployed via Tagada CLI.
+ */
+
 export function ConfigProvider({ 
   children, 
   defaultConfig = 'skincare-demo',
   locale = 'en' 
 }: ConfigProviderProps) {
-  const configState = useConfig(defaultConfig)
+  // Get SDK config (available when deployed via Tagada CLI)
+  const { config: sdkConfig, loading: sdkLoading } = usePluginConfig()
+  
+  // Get local config (for development)
+  const localConfigState = useConfig(defaultConfig)
+  
+  // Determine which config source to use
+  // If we have SDK config, we're deployed and should use that
+  // Otherwise, use local config for development
+  const configState = sdkConfig ? {
+    config: validateConfig(sdkConfig) as Config,
+    loading: sdkLoading,
+    error: null,
+    configName: (sdkConfig as any)?.configName || 'deployed',
+    loadConfig: async () => {},
+    reloadConfig: async () => {},
+    resetToDefault: () => {}
+  } : localConfigState
+  
+  // Log which config source is being used for debugging
+  useEffect(() => {
+    if (sdkConfig) {
+      console.log('🚀 Using Tagada SDK config (deployed)', sdkConfig)
+    } else {
+      console.log('🛠️ Using local config (development)', configState.config)
+    }
+  }, [sdkConfig, configState.config])
   
   // Apply branding colors to CSS custom properties when config loads
   useEffect(() => {

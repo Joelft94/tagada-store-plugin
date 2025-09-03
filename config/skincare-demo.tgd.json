@@ -102,28 +102,6 @@
         "external": true
       }
     ],
-    "features": [
-      {
-        "iconUrl": "https://cdn-icons-png.flaticon.com/512/1828/1828506.png",
-        "title": "NATURAL\nINGREDIENTS",
-        "delay": "0ms"
-      },
-      {
-        "iconUrl": "https://cdn-icons-png.flaticon.com/512/1205/1205546.png",
-        "title": "CRUELTY\nFREE",
-        "delay": "150ms"
-      },
-      {
-        "iconUrl": "https://cdn-icons-png.flaticon.com/512/2912/2912515.png",
-        "title": "DERMATOLOGIST\nTESTED",
-        "delay": "300ms"
-      },
-      {
-        "iconUrl": "https://cdn-icons-png.flaticon.com/512/833/833472.png",
-        "title": "HANDCRAFTED\nWITH LOVE",
-        "delay": "450ms"
-      }
-    ],
     "ctaButton": {
       "text": "EXPLORE COLLECTION",
       "url": "/products",
