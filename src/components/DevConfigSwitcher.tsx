@@ -22,7 +22,6 @@ export function DevConfigSwitcher() {
 
   const switchToConfig = (newConfigName: string) => {
     if (newConfigName !== configName) {
-      console.log('🔥 Dev hot-switching to config:', newConfigName)
       // Update URL without reload - the useConfig hook will pick it up
       const url = new URL(window.location.href)
       url.searchParams.set('config', newConfigName)
@@ -35,7 +34,6 @@ export function DevConfigSwitcher() {
   }
 
   const handleReloadConfig = async () => {
-    console.log('🔄 Reloading current config:', configName)
     await reloadConfig()
     setIsOpen(false)
   }

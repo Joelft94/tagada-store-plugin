@@ -114,7 +114,6 @@ export function ProductDetail() {
       })
     } catch (error) {
       toast.error('Failed to add item to cart')
-      console.error('Error adding to cart:', error)
     }
   }
 

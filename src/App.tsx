@@ -11,49 +11,32 @@ import { Products } from "./pages/Products";
 import { ProductDetail } from "./pages/ProductDetail";
 
 function App() {
-  console.log("🚀 App component rendering with full SDK integration");
+  return (
+    <ConfigProvider defaultConfig="default">
+      <Router>
+        <CartProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navigation />
 
-  try {
-    return (
-      <ConfigProvider defaultConfig="default">
-        <Router>
-          <CartProvider>
-            <div className="min-h-screen flex flex-col">
-              <Navigation />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route
+                  path="/products/:productId"
+                  element={<ProductDetail />}
+                />
+              </Routes>
+            </main>
 
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route
-                    path="/products/:productId"
-                    element={<ProductDetail />}
-                  />
-                </Routes>
-              </main>
-
-              <Footer />
-              <CartDrawer />
-              <DevConfigSwitcher />
-              {/* <CheckoutTest /> - Dev tool only */}
-            </div>
-          </CartProvider>
-        </Router>
-      </ConfigProvider>
-    );
-  } catch (error) {
-    console.error("❌ Error in App:", error);
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">
-            Application Error
-          </h1>
-          <p className="text-gray-600">{error?.toString()}</p>
-        </div>
-      </div>
-    );
-  }
+            <Footer />
+            <CartDrawer />
+            {import.meta.env.DEV && <DevConfigSwitcher />}
+          </div>
+        </CartProvider>
+      </Router>
+    </ConfigProvider>
+  );
 }
 
 export default App;

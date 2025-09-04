@@ -4,7 +4,6 @@ import { useCartContext } from '../contexts/CartProvider'
 import { useConfigProducts } from '../hooks/useConfigProducts'
 import { useConfigContext } from '../contexts/ConfigProvider'
 import { toast } from 'sonner'
-import { DebugInfo } from '../components/DebugInfo'
 
 // Interface for simplified product display
 interface DisplayProduct {
@@ -25,13 +24,6 @@ export function Products() {
   const { products, loading, error } = useConfigProducts()
   const { config } = useConfigContext()
 
-  console.log('🛍️ Products Page Render:', {
-    products,
-    productsCount: products?.length,
-    loading,
-    error,
-    timestamp: new Date().toISOString()
-  })
 
   const handleAddToCart = (product: DisplayProduct, e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation to product page
@@ -58,7 +50,6 @@ export function Products() {
       })
     } catch (error) {
       toast.error('Failed to add item to cart')
-      console.error('Error adding to cart:', error)
     }
   }
 
@@ -68,20 +59,6 @@ export function Products() {
     const firstPrice = product.variants?.[0]?.prices?.[0]
     const realPriceAmount = firstPrice?.currencyOptions?.USD?.amount
     
-    // Debug pricing for the first product to see real data
-    if (product.id === products[0]?.id) {
-      console.log('🎯 REAL PRICE EXTRACTION for first product:', {
-        productName: product.name,
-        variants: product.variants?.length,
-        firstVariant: product.variants?.[0]?.name,
-        pricesCount: product.variants?.[0]?.prices?.length,
-        firstPrice: firstPrice,
-        directAmount: firstPrice?.amount,
-        currencyOptions: firstPrice?.currencyOptions,
-        realPriceAmount: realPriceAmount,
-        realPriceInDollars: realPriceAmount ? realPriceAmount / 100 : 'N/A'
-      })
-    }
     
     return {
       id: product.id,
@@ -266,8 +243,6 @@ export function Products() {
         </section>
       )}
       
-      {/* Debug Panel - Enabled to check image data */}
-      {import.meta.env.DEV && <DebugInfo />}
     </div>
   )
 }

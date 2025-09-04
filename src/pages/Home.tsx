@@ -37,7 +37,6 @@ export function Home() {
 
   const handleQuickAdd = () => {
     if (!heroProduct) {
-      console.warn("No hero product available for quick add");
       return;
     }
 

@@ -25,7 +25,6 @@ const getActiveConfigName = (defaultConfigName?: string): string => {
     const urlParams = new URLSearchParams(window.location.search)
     const urlConfig = urlParams.get('config')
     if (urlConfig) {
-      console.log('🔥 Hot config switching: Using config from URL:', urlConfig)
       return urlConfig
     }
   }
@@ -33,13 +32,11 @@ const getActiveConfigName = (defaultConfigName?: string): string => {
   // Check environment variable
   const envConfig = import.meta.env.VITE_CONFIG_NAME
   if (envConfig) {
-    console.log('🔧 Using config from environment:', envConfig)
     return envConfig
   }
   
   // Fall back to default
   const configName = defaultConfigName || 'default'
-  console.log('📋 Using default config:', configName)
   return configName
 }
 
@@ -80,7 +77,6 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
       return validatedConfig
     } catch (error) {
       // If loading fails, fall back to DEFAULT_CONFIG but still throw for proper error handling
-      console.warn(`Failed to load config '${configName}', using default configuration:`, error)
       const defaultConfig = { ...DEFAULT_CONFIG, configName }
       configCache.set(configName, defaultConfig)
       return defaultConfig
@@ -142,8 +138,7 @@ export const useConfig = (defaultConfigName?: string): UseConfigReturn => {
     const activeConfigName = getActiveConfigName(defaultConfigName)
     
     if (!state.config || state.configName !== activeConfigName) {
-      loadConfig(activeConfigName).catch(error => {
-        console.error('Failed to load config:', error)
+      loadConfig(activeConfigName).catch(() => {
         // Fall back to DEFAULT_CONFIG
         resetToDefault()
       })

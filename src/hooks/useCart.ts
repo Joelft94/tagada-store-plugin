@@ -63,26 +63,17 @@ const calculateTotals = (items: CartItem[], enableBogo: boolean = true) => {
 const loadCartFromStorage = (): CartItem[] => {
   try {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
-    console.log("🛒 loadCartFromStorage: Raw stored value:", stored);
-    const parsed = stored ? JSON.parse(stored) : [];
-    console.log("🛒 loadCartFromStorage: Parsed items:", parsed);
-    return parsed;
-  } catch (error) {
-    console.error("🛒 loadCartFromStorage: Error loading cart:", error);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
     return [];
   }
 };
 
 const saveCartToStorage = (items: CartItem[]): void => {
   try {
-    console.log("🛒 saveCartToStorage: Saving items:", items);
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-    console.log("🛒 saveCartToStorage: Saved successfully");
-    // Verify it was saved
-    const verification = localStorage.getItem(CART_STORAGE_KEY);
-    console.log("🛒 saveCartToStorage: Verification read:", verification);
-  } catch (error) {
-    console.error("🛒 saveCartToStorage: Error saving cart:", error);
+  } catch {
+    // Handle storage errors gracefully
   }
 };
 
@@ -117,14 +108,8 @@ export const useCart = (config?: Config | null): CartHookReturn => {
 
   // Initialize cart from localStorage on mount
   useEffect(() => {
-    console.log("🛒 useCart: Initializing from localStorage...");
     const storedItems = loadCartFromStorage();
     const token = loadOrCreateCartToken();
-    console.log("🛒 useCart: Loaded from storage:", {
-      itemsCount: storedItems.length,
-      items: storedItems,
-      token: token,
-    });
     setItems(storedItems);
     setCartToken(token);
     setIsInitialized(true);
@@ -133,13 +118,8 @@ export const useCart = (config?: Config | null): CartHookReturn => {
   // Save to localStorage whenever items change (but only after initialization)
   useEffect(() => {
     if (!isInitialized) {
-      console.log("🛒 useCart: Skipping save - not initialized yet");
       return;
     }
-    console.log("🛒 useCart: Saving to localStorage:", {
-      itemsCount: items.length,
-      items: items,
-    });
     saveCartToStorage(items);
   }, [items, isInitialized]);
 

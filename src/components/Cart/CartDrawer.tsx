@@ -42,35 +42,14 @@ export function CartDrawer() {
 
   // Handle checkout with new Tagada integration
   const handleCheckout = async () => {
-    console.log("🛒 Checkout button clicked. Cart state:", {
-      itemsLength: items.length,
-      items: items,
-      cartToken: cartToken,
-      itemCount: itemCount,
-    });
-
     if (items.length === 0) {
-      console.warn("⚠️ Cart is empty when checkout button clicked");
       return;
     }
 
     setIsProcessing(true);
     try {
-      console.log("🛒 Starting checkout process with:", {
-        itemCount: items.length,
-        cartToken,
-        items: items.map((item) => ({
-          variantId: item.variantId,
-          quantity: item.quantity,
-          priceId: item.priceId,
-        })),
-      });
-
-      // Use the new checkout initialization hook
       await initializeCheckout();
-      // Redirect happens automatically in initializeCheckout
     } catch (error) {
-      console.error("❌ Checkout failed:", error);
       alert(
         `Checkout failed: ${
           error instanceof Error ? error.message : "Unknown error"

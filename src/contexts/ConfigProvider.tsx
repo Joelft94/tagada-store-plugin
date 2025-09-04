@@ -64,9 +64,7 @@ export function ConfigProvider({
   // Log which config source is being used for debugging
   useEffect(() => {
     if (sdkConfig) {
-      console.log('🚀 Using Tagada SDK config (deployed)', sdkConfig)
     } else {
-      console.log('🛠️ Using local config (development)', configState.config)
     }
   }, [sdkConfig, configState.config])
   
@@ -99,11 +97,6 @@ export function ConfigProvider({
         root.style.setProperty('--color-secondary-light', adjustBrightness(branding.secondaryColor, 20))
         root.style.setProperty('--color-secondary-dark', adjustBrightness(branding.secondaryColor, -20))
       }
-      
-      console.log('🎨 Applied dynamic colors:', {
-        primary: branding.primaryColor,
-        secondary: branding.secondaryColor || 'not set'
-      })
     }
   }, [configState.config?.branding])
 
